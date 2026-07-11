@@ -1,0 +1,37 @@
+:root {
+  /* Colors */
+  --color-navy: #0A1C3F;
+  --color-navy-hover: #122A57;
+  --color-gold: #B89C65;
+  --color-cream: #F3ECE0;
+  --color-white: #FFFFFF;
+  --color-charcoal: #4A4A4A;
+  --color-navy-10: #0A1C3F1A;
+  --color-gold-10: #B89C651A;
+  --color-success: #3F6B4A;
+
+  /* Shadow */
+  --shadow-card: 0 4px 24px rgba(10, 28, 63, 0.06);
+
+  /* Radius */
+  --radius-card: 12px;
+  --radius-btn: 4px;
+  --radius-pill: 999px;
+
+  /* Spacing */
+  --section-padding-y: 96px;
+  --section-padding-y-mobile: 56px;
+  --grid-gutter: 32px;
+  --grid-gutter-mobile: 20px;
+  --card-padding: 32px;
+  --card-padding-mobile: 24px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
