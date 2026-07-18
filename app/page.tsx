@@ -74,7 +74,7 @@ export default function HomePage() {
           highlight="SHOW UP"
           description="Our 8 core services fall under three broad commitments."
         />
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-y-10 gap-x-8 max-w-6xl mx-auto">
           {topLevelOfferings.map((offering, i) => (
             <ServiceCard
               key={offering.title}
