@@ -93,28 +93,25 @@ export default function SiteFooter() {
       </div>
 
       <div className="border-t border-navy-10">
-        <div className="max-w-[1200px] mx-auto px-5 md:px-8 py-5 flex flex-col md:flex-row items-center justify-between gap-3 text-[13px] text-charcoal">
-          <span>{siteIdentity.registration}</span>
-          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-3 text-center sm:text-left">
-            <span>&copy; {new Date().getFullYear()} {siteIdentity.nameEnglish}. All rights reserved.</span>
-            <span className="hidden sm:inline text-charcoal/30">|</span>
-            <span className="text-[13px]">
-              Made with ❤️ by{" "}
-              <a
-                href="https://www.site-story.site/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:underline font-600 inline-block align-middle ml-0.5"
-              >
-                <ShinyText 
-                  text="Site Story" 
-                  speed={2.5} 
-                  color="#0A1C3F" 
-                  shineColor="#B89C65" 
-                />
-              </a>
-            </span>
-          </div>
+        <div className="max-w-[1200px] mx-auto px-5 md:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-[13px] text-charcoal">
+          <span>&copy; {new Date().getFullYear()} {siteIdentity.nameEnglish}. All rights reserved.</span>
+          <span className="text-[13px]">
+            Made with ❤️ by{" "}
+            <a
+              href="https://www.site-story.site/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block align-middle ml-1 hover:scale-105 transition-transform duration-200"
+            >
+              <ShinyText 
+                text="Site Story" 
+                speed={2} 
+                color="#b89c65" 
+                shineColor="#ffffff" 
+                className="font-700 font-display tracking-wide text-[14px]"
+              />
+            </a>
+          </span>
         </div>
       </div>
     </footer>
