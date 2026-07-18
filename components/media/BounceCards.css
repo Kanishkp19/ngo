@@ -3,8 +3,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 280px;
-  height: 280px;
+  width: 320px;
+  height: 320px;
   margin: 0 auto;
 }
 
@@ -12,6 +12,13 @@
   .bounceCardsContainer {
     width: 360px;
     height: 360px;
+  }
+}
+
+@media (min-width: 480px) {
+  .bounceCardsContainer {
+    width: 420px;
+    height: 420px;
   }
 }
 
@@ -24,9 +31,9 @@
 
 .card {
   position: absolute;
-  width: 110px;
-  height: 110px;
-  border: 3px solid #fff;
+  width: 145px;
+  height: 145px;
+  border: 3.5px solid #fff;
   outline: 1px solid rgba(212, 175, 55, 0.25);
   border-radius: 12px;
   overflow: hidden;
@@ -39,10 +46,19 @@
 
 @media (min-width: 380px) {
   .card {
-    width: 155px;
-    height: 155px;
+    width: 175px;
+    height: 175px;
     border: 4px solid #fff;
     border-radius: 16px;
+  }
+}
+
+@media (min-width: 480px) {
+  .card {
+    width: 200px;
+    height: 200px;
+    border: 4.5px solid #fff;
+    border-radius: 18px;
   }
 }
 
