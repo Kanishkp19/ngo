@@ -1,13 +1,33 @@
 export type Contact = {
   name: string;
   phone: string;
-  role?: string; // gap flagged in CONTENT.md — not yet provided
+  roleEnglish?: string;
+  roleHindi?: string;
+  src?: string;
 };
 
 export const namedContacts: Contact[] = [
-  { name: "Sikandar Singh", phone: "94600 95563" },
-  { name: "Krishna Chaudhary", phone: "93146 50479" },
-  { name: "Dhanveer Singh Hundal", phone: "97720 36420" },
+  {
+    name: "Krishna Chaudhary",
+    phone: "93146 50479",
+    roleEnglish: "Treasurer",
+    roleHindi: "कोषाध्यक्ष",
+    src: "/media/about/person/krishna.jpg",
+  },
+  {
+    name: "Sikander Singh",
+    phone: "94600 95563",
+    roleEnglish: "President",
+    roleHindi: "अध्यक्ष",
+    src: "/media/about/person/sikander.png",
+  },
+  {
+    name: "Dhanveer Singh Hundal",
+    phone: "97720 36420",
+    roleEnglish: "Secretary",
+    roleHindi: "सचिव",
+    src: "/media/about/person/Dhanveer.jpg",
+  },
 ];
 
 export const committee = {

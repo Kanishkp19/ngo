@@ -5,7 +5,7 @@ import ImageGrid4x2 from "@/components/media/ImageGrid4x2";
 import Button from "@/components/primitives/Button";
 import { coreServices } from "@/content/services";
 
-const deepDiveIds = ["first-aid", "psychiatric-services", "rehabilitation"];
+const deepDiveIds = ["first-aid", "food-service", "rehabilitation"];
 const deepDives = coreServices.filter((s) => deepDiveIds.includes(s.id));
 
 const deepDiveDetails: Record<string, { problem: string; whatWeDo: string; outcome: string }> = {
@@ -14,10 +14,10 @@ const deepDiveDetails: Record<string, { problem: string; whatWeDo: string; outco
     whatWeDo: "Our team provides immediate first aid and stabilizes residents before further care.",
     outcome: "Faster recovery and a safer transition into ongoing shelter and treatment.",
   },
-  "psychiatric-services": {
-    problem: "Many residents arrive with untreated mental health conditions.",
-    whatWeDo: "We arrange access to psychiatric specialists as part of each resident's care plan.",
-    outcome: "Improved mental wellbeing and, for many, a path back toward independence.",
+  "food-service": {
+    problem: "Destitute individuals face severe hunger and malnutrition on the streets.",
+    whatWeDo: "We provide three fresh, hygienic, and nutritious meals daily to all shelter residents.",
+    outcome: "Improved physical health, energy, and overall dignity for every resident.",
   },
   rehabilitation: {
     problem: "Families are often unaware of what happened to a missing relative.",
@@ -50,6 +50,7 @@ export default function ProgramsPage() {
             titleEnglish: s.titleEnglish,
             titleHindi: s.titleHindi,
             caption: s.caption,
+            src: s.src,
           }))}
         />
       </Section>

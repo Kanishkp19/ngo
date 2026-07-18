@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>UNIT 114 — UI Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Special+Elite&family=Caveat:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ===================================================================
+   UNIT 114 — DESIGN TOKENS
+   =================================================================== */
+:root{
+  --ink:        #0d0f14;
+  --ink-2:      #171b24;
+  --panel:      #1c212b;
+  --panel-2:    #232a36;
+  --panel-hair: #313a4a;
+  --text:       #eef0f4;
+  --text-soft:  #9aa3b5;
+  --text-dim:   #626c80;
+
+  --paper:      #ede2c8;
+  --paper-2:    #e0d2ab;
+  --paper-ink:  #2b2620;
+
+  --rust:       #c1502f;
+  --rust-soft:  #7a3624;
+  --teal:       #4e9e93;
+  --teal-soft:  #2c5651;
+  --thread:     #9c2f24;
+  --gold:       #c9a227;
+
+  --chrome-font: 'Manrope', -apple-system, sans-serif;
+  --read-font:   'Source Serif 4', serif;
+  --hand-font:   'Caveat', cursive;
+  --tag-font:    'Special Elite', monospace;
+  --mono-font:   'JetBrains Mono', monospace;
+
+  --stage-w: 412px;
+}
+*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html,body{ height:100%; }
+body{
+  margin:0; min-height:100vh;
+  background:
+    radial-gradient(1200px 800px at 20% 0%, #1a1f2b 0%, #06070a 62%);
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--chrome-font); color:var(--text); padding:22px 0;
+}
+::-webkit-scrollbar{ width:0; height:0; }
+button, input{ font-family:inherit; }
+
+/* ===================== STAGE (the player's real phone) ===================== */
+#stage{
+  position:relative; width:var(--stage-w); max-width:94vw; height:894px; max-height:96vh;
+  background:var(--ink); border-radius:52px; overflow:hidden;
+  box-shadow:0 0 0 3px #05060a, 0 0 0 5px #34394a, 0 0 0 5.5px #05060a,
+    0 50px 100px -25px rgba(0,0,0,.85), 0 15px 35px rgba(0,0,0,.6);
+}
+#stage:before{ /* dynamic island */
+  content:""; position:absolute; top:13px; left:50%; transform:translateX(-50%);
+  width:112px; height:33px; background:#000; border-radius:20px; z-index:999; pointer-events:none;
+}
+#stage:after{ /* island camera glint */
+  content:""; position:absolute; top:24px; left:calc(50% + 33px); width:9px; height:9px; border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, #3a5f75, #05060a 70%); z-index:1000; pointer-events:none;
+}
+#home-indicator{
+  position:absolute; bottom:9px; left:50%; transform:translateX(-50%); width:134px; height:5px; border-radius:3px;
+  background:rgba(255,255,255,.55); z-index:950; cursor:pointer; transition:opacity .25s, background .2s;
+}
+#home-indicator.dark{ background:rgba(0,0,0,.35); }
+#home-indicator.off{ opacity:0; pointer-events:none; }
+#home-indicator:active{ background:rgba(255,255,255,.9); }
+
+.screen{
+  position:absolute; inset:0; display:flex; flex-direction:column; background:var(--ink);
+  opacity:0; visibility:hidden; transform:scale(1);
+  transition:opacity .3s ease, transform .38s cubic-bezier(.2,.8,.2,1);
+}
+.screen.active{ opacity:1; visibility:visible; z-index:5; }
+.screen.enlarge-in{ transform:scale(.86); }
+.screen.enlarge-in.active{ transform:scale(1); }
+
+/* ===== realistic status bar (auto-painted by JS) ===== */
+.statusbar{
+  height:50px; flex:none; display:flex; align-items:center; justify-content:space-between;
+  padding:0 26px 0 30px; position:relative; z-index:60; font-variant-numeric:tabular-nums;
+}
+.statusbar.on-dark{ color:#fff; }
+.statusbar.on-light{ color:#111; }
+.sb-time{ font-size:15px; font-weight:600; letter-spacing:-.01em; }
+.sb-right{ display:flex; align-items:center; gap:6px; }
+.sb-ic{ display:block; color:currentColor; }
+.battery{ width:25px; height:12px; border:1.2px solid currentColor; border-radius:3.5px; position:relative; opacity:.95; }
+.battery:after{ content:""; position:absolute; right:-3.5px; top:3.5px; width:2px; height:5px; background:currentColor; border-radius:0 1px 1px 0; opacity:.9;}
+.battery i{ position:absolute; top:1.6px; left:1.6px; bottom:1.6px; width:78%; background:currentColor; border-radius:1.5px; display:block; }
+
+/* generic in-app nav bar */
+.dev-header{ flex:none; display:flex; align-items:center; gap:10px; padding:2px 18px 12px; position:relative; z-index:30; }
+.dev-header .back{
+  width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.08);
+  display:flex; align-items:center; justify-content:center; color:var(--text); font-size:15px; cursor:pointer; flex:none;
+}
+.dev-header .back:active{ transform:scale(.9); }
+.dev-header h1{ font-size:16.5px; font-weight:700; margin:0; letter-spacing:-.01em; }
+.dev-header .sub{ font-size:11.5px; color:var(--text-dim); margin-top:1px; }
+.nav-large-title{ padding:2px 20px 10px; }
+.nav-large-title .eyebrow{ font-size:11px; color:var(--text-dim); font-weight:600; text-transform:uppercase; letter-spacing:.06em; }
+.nav-large-title h1{ font-size:30px; font-weight:800; letter-spacing:-.02em; margin:2px 0 0; }
+
+.scroll{ flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+
+/* ===================================================================
+   1. MAIN MENU
+   =================================================================== */
+#screen-menu{
+  background:
+    linear-gradient(180deg, rgba(13,15,20,0) 0%, rgba(13,15,20,.94) 74%, var(--ink) 100%),
+    radial-gradient(ellipse 600px 460px at 50% 6%, #23293a 0%, #0a0b10 68%),
+    linear-gradient(160deg,#12141b,#08090c);
+  justify-content:flex-end;
+}
+#screen-menu:before{ /* faint case-file grid texture */
+  content:""; position:absolute; inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+  background-size:34px 34px; opacity:.5;
+}
+.menu-title-wrap{ position:absolute; top:15%; left:0; right:0; text-align:center; z-index:2;}
+.menu-eyebrow{ font-family:var(--tag-font); font-size:11.5px; letter-spacing:.34em; color:var(--rust); text-transform:uppercase; }
+.menu-title{ font-size:56px; font-weight:800; letter-spacing:-.01em; margin:12px 0 0; line-height:.93; text-shadow:0 4px 30px rgba(0,0,0,.5); }
+.menu-title span{ display:block; font-family:var(--tag-font); font-weight:400; font-size:20px; letter-spacing:.5em; color:var(--text-soft); margin-top:16px; }
+.menu-actions{ padding:0 30px 50px; display:flex; flex-direction:column; gap:11px; position:relative; z-index:3; }
+.menu-progress{ text-align:center; color:var(--text-dim); font-size:12px; margin-bottom:8px; letter-spacing:.04em; }
+.menu-btn{
+  padding:17px 22px; border-radius:15px; border:1px solid var(--panel-hair); background:rgba(28,33,43,.85);
+  backdrop-filter:blur(10px); color:var(--text); font-family:var(--chrome-font); font-size:15.5px; font-weight:700;
+  letter-spacing:.01em; cursor:pointer; display:flex; align-items:center; justify-content:space-between;
+}
+.menu-btn.primary{ background:linear-gradient(160deg,#d15f3b,#a83f22); border-color:#a83f22; box-shadow:0 12px 24px -8px rgba(193,80,47,.5); }
+.menu-btn:active{ transform:scale(.98); }
+.menu-btn .arrow{ opacity:.6; }
+
+/* ===================================================================
+   2. OPENING CUTSCENE
+   =================================================================== */
+#screen-cutscene{ background:#000; }
+.cutscene-frame{ position:absolute; inset:0; display:flex; align-items:flex-end; opacity:0; transition:opacity 1.2s ease; background-size:cover; background-position:center; }
+.cutscene-frame.on{ opacity:1; }
+.cutscene-frame:after{ content:""; position:absolute; inset:0; background:linear-gradient(0deg,rgba(0,0,0,.85) 0%, transparent 45%); }
+.cutscene-caption{ position:relative; z-index:2; padding:0 30px 90px; font-family:var(--read-font); font-style:italic; font-size:17px; color:#dfe3ea; line-height:1.5; }
+.cutscene-skip{ position:absolute; top:60px; right:20px; padding:9px 16px; border-radius:100px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.2); font-size:12px; color:#fff; opacity:0; transition:opacity .4s; cursor:pointer; letter-spacing:.03em; z-index:5;}
+.cutscene-skip.show{ opacity:1; }
+
+/* ===================================================================
+   3. DEVICE HUB — the desk
+   =================================================================== */
+#screen-hub{ background:linear-gradient(180deg,#221a10 0%, #171009 55%, #0f0a06 100%); }
+.hub-scroll{ flex:1; position:relative; overflow:hidden; }
+.hub-desk{
+  position:absolute; inset:0;
+  background-image:
+    repeating-linear-gradient(90deg, rgba(0,0,0,.14) 0 2px, transparent 2px 96px),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.015) 0 1px, transparent 1px 4px),
+    radial-gradient(700px 500px at 20% 0%, rgba(78,158,147,.08), transparent 60%),
+    linear-gradient(180deg, #26190f 0%, #1b1108 100%);
+}
+.hub-desk:after{ content:""; position:absolute; inset:0; box-shadow:inset 0 60px 90px -60px rgba(0,0,0,.7), inset 0 -100px 120px -60px rgba(0,0,0,.6); }
+.hub-heading{ padding:0 22px 2px; position:relative; z-index:4; }
+.hub-heading .ch{ font-family:var(--tag-font); color:var(--rust); font-size:11px; letter-spacing:.26em; }
+.hub-heading h2{ margin:5px 0 0; font-size:20px; font-weight:800; }
+
+.hub-item{ position:absolute; cursor:pointer; transition:transform .18s ease, filter .18s ease; }
+.hub-item:active{ transform:scale(.95) !important; }
+.hub-item.locked{ filter:grayscale(1) brightness(.5); }
+.hub-item.locked:active{ animation:shake .3s; }
+@keyframes shake{ 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+
+.device-obj{ border-radius:11px; position:relative; box-shadow:0 18px 30px -10px rgba(0,0,0,.65), 0 3px 0 rgba(0,0,0,.3); }
+.badge-dot{ position:absolute; top:-5px; right:-5px; width:15px;height:15px;border-radius:50%; background:var(--rust); border:2.5px solid #1b1108; }
+.badge-dot.pulse{ animation:pulseGlow 1.7s ease-in-out infinite; }
+@keyframes pulseGlow{ 0%,100%{ box-shadow:0 0 0 0 rgba(193,80,47,.55);} 50%{ box-shadow:0 0 0 9px rgba(193,80,47,0);} }
+.device-label{ position:absolute; left:50%; transform:translateX(-50%); top:calc(100% + 9px); font-size:11.5px; color:var(--text-soft); white-space:nowrap; font-weight:600; }
+
+.obj-phone{ width:62px; height:126px; background:linear-gradient(155deg,#33394a,#12151d); border:2px solid #444d61; position:relative; }
+.obj-phone:before{ content:""; position:absolute; inset:5px; border-radius:6px; background:linear-gradient(200deg,#3f5852 0%,#141c1a 60%); }
+.obj-phone:after{ content:""; position:absolute; top:11px; left:50%; transform:translateX(-50%); width:22px; height:5px; background:#0d0f14; border-radius:3px; }
+
+.obj-laptop{ width:118px; height:76px; }
+.obj-laptop .lid{ width:100%; height:60px; background:linear-gradient(155deg,#33394a,#161a24); border:2px solid #444d61; border-radius:6px 6px 1px 1px; position:relative; }
+.obj-laptop .lid:before{ content:""; position:absolute; inset:5px; border-radius:3px; background:linear-gradient(200deg,#5a3222 0%,#1c130c 60%); }
+.obj-laptop .base{ width:120%; margin-left:-10%; height:9px; background:linear-gradient(180deg,#2a303d,#1a1e27); border-radius:0 0 9px 9px; box-shadow:0 4px 10px rgba(0,0,0,.45); }
+
+.obj-watch{ width:52px; height:56px; }
+.obj-watch .band{ position:absolute; left:50%; transform:translateX(-50%); width:24px; height:82px; background:linear-gradient(180deg,#2a1f14,#181109); border-radius:8px; top:-12px; z-index:-1; }
+.obj-watch .face{ width:52px; height:52px; border-radius:15px; background:linear-gradient(155deg,#33394a,#12151d); border:2px solid #444d61; position:relative; margin-top:10px; }
+.obj-watch .face:before{ content:""; position:absolute; inset:5px; border-radius:9px; background:radial-gradient(circle at 30% 25%, #4e9e93, #12201d 72%); }
+.obj-watch .crown{ position:absolute; right:-4px; top:20px; width:5px; height:9px; background:#444d61; border-radius:2px; }
+
+.obj-sd{ width:48px; height:70px; background:linear-gradient(155deg,#3a3a3a,#101010); border-radius:3px 3px 9px 3px; border:2px solid #4a4a4a; position:relative; }
+.obj-sd:before{ content:""; position:absolute; top:6px; left:6px; right:6px; height:15px; background:var(--rust); opacity:.65; border-radius:2px; }
+.obj-sd:after{ content:"SD"; position:absolute; bottom:8px; left:0; right:0; text-align:center; font-family:var(--tag-font); font-size:9px; color:#9aa0aa; }
+
+.obj-notebook{ width:76px; height:98px; background:linear-gradient(155deg,#8a6845,#4a3421); border-radius:2px 6px 6px 2px; box-shadow:0 18px 30px -10px rgba(0,0,0,.65), inset -7px 0 0 rgba(0,0,0,.28); position:relative; }
+.obj-notebook .rings{ position:absolute; left:-3px; top:8px; bottom:8px; width:6px; display:flex; flex-direction:column; justify-content:space-between; }
+.obj-notebook .rings i{ width:6px;height:6px;border-radius:50%; border:1.4px solid #b8ada0; display:block; background:#2a2018; }
+
+.hub-board-access{ position:absolute; cursor:pointer; }
+.corkboard{
+  width:150px; height:112px; border-radius:5px; position:relative; transform:rotate(-3deg);
+  background:
+    radial-gradient(circle at 15% 20%, rgba(0,0,0,.16) 0 2px, transparent 3px) 0 0/13px 13px,
+    radial-gradient(circle at 60% 65%, rgba(0,0,0,.12) 0 1.5px, transparent 2.5px) 4px 6px/17px 17px,
+    linear-gradient(155deg,#c19563,#8a6539);
+  border:7px solid #3d2a18; box-shadow:0 18px 32px -10px rgba(0,0,0,.7), inset 0 0 20px rgba(0,0,0,.25);
+}
+.corkboard .pin{ position:absolute; width:7px;height:7px;border-radius:50%; background:radial-gradient(circle at 30% 30%,#e8735a,var(--rust)); box-shadow:0 1.5px 3px rgba(0,0,0,.5); }
+.hub-board-access .device-label{ top:calc(100% + 11px); }
+
+.hub-notify-toast{
+  position:absolute; left:14px; right:14px; top:6px; z-index:30; background:rgba(26,31,40,.88); backdrop-filter:blur(18px) saturate(1.6);
+  border:1px solid rgba(255,255,255,.1); border-radius:18px; padding:12px 14px; display:flex; gap:11px; align-items:center;
+  box-shadow:0 16px 34px rgba(0,0,0,.5); transform:translateY(-150%); transition:transform .55s cubic-bezier(.2,.9,.25,1.2);
+}
+.hub-notify-toast.show{ transform:translateY(0); }
+.toast-icon{ width:34px;height:34px;border-radius:9px; background:linear-gradient(155deg,#5cb0a4,#2c5651); display:flex; align-items:center; justify-content:center; font-size:15px; flex:none; box-shadow:0 3px 8px rgba(0,0,0,.3);}
+.toast-txt b{ display:block; font-size:13px; } .toast-txt span{ font-size:12px; color:var(--text-soft); }
+
+.settings-fab{ position:absolute; top:60px; right:14px; z-index:40; width:34px;height:34px;border-radius:50%; background:rgba(0,0,0,.4); backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,.14); color:#fff; display:flex;align-items:center;justify-content:center; cursor:pointer; font-size:14px;}
+
+/* ===================================================================
+   PHONE — LOCK SCREEN (realistic iOS-style, idle + passcode sheet)
+   =================================================================== */
+#screen-phone-lock{
+  background:
+    radial-gradient(ellipse 500px 380px at 75% 12%, rgba(78,158,147,.20), transparent 60%),
+    radial-gradient(ellipse 420px 500px at 15% 85%, rgba(193,80,47,.14), transparent 62%),
+    linear-gradient(165deg,#1b2230 0%, #0c0e13 62%, #08090c 100%);
+  position:relative; justify-content:flex-start;
+}
+.lock-clock{ text-align:center; padding:64px 0 4px; }
+.lock-clock .time{ font-size:88px; font-weight:200; letter-spacing:-.02em; line-height:.95; }
+.lock-clock .date{ font-size:15.5px; color:var(--text-soft); margin-top:10px; font-weight:600; }
+.lock-notifs{ padding:26px 14px 0; display:flex; flex-direction:column; gap:8px; }
+.lock-notif{
+  background:rgba(255,255,255,.09); backdrop-filter:blur(24px) saturate(1.8); border:1px solid rgba(255,255,255,.08);
+  border-radius:16px; padding:12px 13px; display:flex; gap:10px; align-items:flex-start; opacity:0; transform:translateY(6px) scale(.98);
+  animation:notifIn .55s cubic-bezier(.2,.8,.3,1) forwards;
+}
+.lock-notif:nth-child(2){ animation-delay:.12s; }
+.lock-notif .ic{ width:27px;height:27px;border-radius:8px; background:linear-gradient(155deg,#5cb0a4,#2c5651); flex:none; display:flex;align-items:center;justify-content:center; font-size:13px; box-shadow:0 2px 6px rgba(0,0,0,.3);}
+.lock-notif .body{ flex:1; min-width:0; }
+.lock-notif .toprow{ display:flex; justify-content:space-between; }
+.lock-notif b{ font-size:12.5px; font-weight:700; } .lock-notif time{ font-size:11px; color:var(--text-dim); }
+.lock-notif span{ font-size:12.5px; color:var(--text-soft); display:block; margin-top:1px; }
+@keyframes notifIn{ to{ opacity:1; transform:none; } }
+.lock-swipe-hint{ margin-top:auto; text-align:center; padding:0 0 60px; font-size:12.5px; color:var(--text-soft); font-weight:600; opacity:.85; }
+.lock-swipe-hint .chev{ display:block; font-size:16px; margin-bottom:2px; animation:chevBob 1.8s ease-in-out infinite; }
+@keyframes chevBob{ 0%,100%{ transform:translateY(0); opacity:.5;} 50%{ transform:translateY(-5px); opacity:1;} }
+.lock-tray{ position:absolute; bottom:34px; left:26px; right:26px; display:flex; justify-content:space-between; }
+.lock-tray .circ{ width:46px;height:46px;border-radius:50%; background:rgba(255,255,255,.1); backdrop-filter:blur(10px); display:flex; align-items:center; justify-content:center; font-size:17px; }
+
+.passcode-sheet{
+  position:absolute; inset:0; z-index:80; background:rgba(6,7,10,.72); backdrop-filter:blur(30px) saturate(1.4);
+  display:flex; flex-direction:column; align-items:center; transform:translateY(100%); transition:transform .42s cubic-bezier(.2,.9,.25,1);
+}
+.passcode-sheet.show{ transform:translateY(0); }
+.passcode-sheet .ptitle{ margin-top:74px; font-size:15.5px; font-weight:600; color:#e9ebef; }
+.passcode-sheet .psub{ margin-top:5px; font-size:12px; color:var(--text-dim); text-align:center; padding:0 40px; }
+.dots{ display:flex; justify-content:center; gap:16px; margin:26px 0 30px; }
+.dots i{ width:13px;height:13px;border-radius:50%; border:1.6px solid rgba(255,255,255,.6); display:block; transition:background .15s; }
+.dots i.filled{ background:#fff; border-color:#fff; }
+.dots.shake{ animation:shake .35s; }
+.keypad{ display:grid; grid-template-columns:repeat(3,74px); gap:20px 26px; }
+.key{
+  width:74px; height:74px; border-radius:50%; background:rgba(255,255,255,.1); backdrop-filter:blur(8px);
+  border:.5px solid rgba(255,255,255,.14); display:flex; align-items:center; justify-content:center;
+  font-size:26px; font-weight:400; cursor:pointer; user-select:none; color:#fff;
+}
+.key:active{ background:rgba(255,255,255,.24); }
+.key .sub{ display:none; }
+.keypad-foot{ margin-top:14px; display:flex; justify-content:center; width:100%; }
+
+/* ===================================================================
+   PHONE — HOME SCREEN (springboard)
+   =================================================================== */
+#screen-phone-home{
+  background:
+    radial-gradient(ellipse 600px 500px at 80% -5%, rgba(78,158,147,.22), transparent 55%),
+    radial-gradient(ellipse 500px 480px at 5% 100%, rgba(193,80,47,.18), transparent 55%),
+    linear-gradient(165deg,#1b2230 0%, #0c0e13 60%, #08090c 100%);
+}
+.springboard-title{ padding:64px 24px 4px; }
+.springboard-title .k{ font-family:var(--tag-font); font-size:11px; color:var(--rust); letter-spacing:.24em; }
+.springboard-title h1{ font-size:23px; font-weight:800; margin:5px 0 0; }
+.phone-app-grid{ padding:20px 26px; display:grid; grid-template-columns:repeat(4,1fr); gap:22px 10px; }
+.phone-app{ display:flex; flex-direction:column; align-items:center; gap:6px; cursor:pointer; }
+.app-icon{
+  width:58px; height:58px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:23px;
+  position:relative; box-shadow:0 10px 20px -8px rgba(0,0,0,.55); overflow:hidden;
+}
+.app-icon:after{ content:""; position:absolute; inset:0; background:linear-gradient(160deg, rgba(255,255,255,.35), rgba(255,255,255,0) 45%); }
+.phone-app span{ font-size:11px; color:#e2e5ea; font-weight:500; text-shadow:0 1px 3px rgba(0,0,0,.5); }
+.app-icon.messages{ background:linear-gradient(160deg,#5cd48a,#1f9950); }
+.app-icon.gallery{ background:conic-gradient(from 220deg,#ffd76a,#ff6a6a,#c04fb0,#5a8bff,#4fd6c0,#ffd76a); }
+.app-icon.memo{ background:linear-gradient(160deg,#f7584e,#a4241d); }
+.app-icon .abadge{ position:absolute; top:-4px; right:-4px; background:var(--rust); color:#fff; font-size:10px; font-weight:800; min-width:18px; height:18px; border-radius:9px; display:flex; align-items:center; justify-content:center; border:2.5px solid #111319; padding:0 4px; z-index:2;}
+.phone-app.empty .app-icon{ background:rgba(255,255,255,.05); box-shadow:none; }
+.phone-app.empty .app-icon:after{ display:none; }
+
+/* ===================================================================
+   MESSAGES — realistic iMessage list + thread
+   =================================================================== */
+.thread-row{ display:flex; gap:12px; padding:12px 20px; align-items:center; cursor:pointer; }
+.thread-row.locked{ opacity:.36; cursor:default; }
+.thread-avatar{ width:48px;height:48px;border-radius:50%; background:linear-gradient(160deg,#7a8296,#454c5d); display:flex;align-items:center;justify-content:center; font-weight:700; font-size:16px; flex:none; color:#fff; }
+.thread-avatar.unknown{ background:linear-gradient(160deg,#7a3624,#4a1e12); }
+.thread-meta{ flex:1; min-width:0; border-bottom:1px solid rgba(255,255,255,.06); padding-bottom:12px; }
+.thread-meta .top{ display:flex; justify-content:space-between; }
+.thread-meta b{ font-size:15px; font-weight:600; }
+.thread-meta .time{ font-size:12px; color:var(--text-dim); }
+.thread-meta p{ margin:3px 0 0; font-size:13px; color:var(--text-soft); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:230px; }
+.thread-unread{ width:10px;height:10px;border-radius:50%; background:#3ea2ff; flex:none; margin-top:2px; }
+.locked-chip{ font-family:var(--tag-font); font-size:9.5px; color:var(--text-dim); border:1px solid var(--panel-hair); padding:2px 6px; border-radius:5px; }
+
+.thread-nav{ display:flex; flex-direction:column; align-items:center; padding:4px 18px 8px; position:relative; }
+.thread-nav .backrow{ width:100%; display:flex; align-items:center; }
+.thread-nav .back{ width:32px;height:32px;border-radius:50%; background:rgba(255,255,255,.07); display:flex;align-items:center;justify-content:center; cursor:pointer; }
+.thread-nav .center{ position:absolute; left:0; right:0; top:2px; display:flex; flex-direction:column; align-items:center; }
+.thread-nav .center .av{ width:34px;height:34px;border-radius:50%; background:linear-gradient(160deg,#7a3624,#4a1e12); display:flex;align-items:center;justify-content:center; font-size:13px; font-weight:700; color:#fff;}
+.thread-nav .center .nm{ font-size:11px; color:var(--text-soft); margin-top:3px; font-weight:600; }
+
+.chat-bg{ flex:1; overflow-y:auto; padding:14px 12px 8px; display:flex; flex-direction:column; gap:3px; }
+.date-divider{ text-align:center; font-size:11px; color:var(--text-dim); margin:10px 0 6px; font-weight:600; }
+.bubble-row{ display:flex; margin:1px 4px; }
+.bubble-row.mine{ justify-content:flex-end; }
+.bubble-row.grouped-first{ margin-top:9px; }
+.bubble{ max-width:76%; padding:9px 14px; border-radius:19px; font-size:15px; line-height:1.4; position:relative; }
+.bubble-row.theirs .bubble{ background:#2a2f3b; border-bottom-left-radius:5px; }
+.bubble-row.theirs .bubble:before{ content:""; position:absolute; left:-6px; bottom:0; width:14px; height:16px; background:#2a2f3b; border-radius:0 0 16px 0; z-index:-1; }
+.bubble-row.mine .bubble{ background:linear-gradient(160deg,#3ea2ff,#0a7dee); border-bottom-right-radius:5px; }
+.bubble-row.mine .bubble:before{ content:""; position:absolute; right:-6px; bottom:0; width:14px; height:16px; background:#0a7dee; border-radius:0 0 0 16px; z-index:-1; }
+.bubble .pin-word{ text-decoration:underline; text-decoration-color:var(--rust); text-decoration-thickness:2px; text-underline-offset:3px; cursor:pointer; font-weight:600; }
+.typing-row .bubble{ display:flex; gap:4px; padding:14px 16px; background:#2a2f3b; }
+.typing-row .bubble i{ width:6.5px;height:6.5px;border-radius:50%; background:#8a92a3; display:block; animation:typeBounce 1.1s infinite ease-in-out; }
+.typing-row .bubble i:nth-child(2){ animation-delay:.15s;} .typing-row .bubble i:nth-child(3){ animation-delay:.3s;}
+@keyframes typeBounce{ 0%,60%,100%{ transform:translateY(0);} 30%{ transform:translateY(-4px);} }
+.pin-flight{ position:absolute; z-index:200; font-size:16px; pointer-events:none; transition:transform .6s cubic-bezier(.3,.6,.2,1), opacity .6s ease; }
+.chat-inputbar{ flex:none; padding:8px 10px 14px; display:flex; gap:8px; align-items:center; }
+.chat-inputbar .plus{ width:30px;height:30px; border-radius:50%; border:1.6px solid var(--text-dim); color:var(--text-dim); display:flex;align-items:center;justify-content:center; font-size:16px; flex:none; }
+.chat-inputbar .fake-input{ flex:1; background:#20242e; border:1px solid var(--panel-hair); border-radius:100px; padding:9px 16px; color:var(--text-dim); font-size:14px; }
+
+/* ===================================================================
+   GALLERY (Photos app) — grid + viewer
+   =================================================================== */
+.photos-segment{ margin:4px 20px 10px; background:#1c212b; border-radius:9px; padding:2px; display:flex; }
+.photos-segment span{ flex:1; text-align:center; padding:6px 0; font-size:12px; font-weight:600; border-radius:7px; color:var(--text-soft); }
+.photos-segment span.on{ background:#39404f; color:#fff; }
+.gallery-date{ padding:12px 20px 8px; font-size:13.5px; color:var(--text); font-weight:700; }
+.gallery-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:1.5px; padding:0 0 18px; }
+.gthumb{ aspect-ratio:1; background-size:cover; background-position:center; cursor:pointer; position:relative; }
+.gthumb.locked{ filter:blur(9px) brightness(.45) grayscale(1); cursor:default; }
+.gthumb.locked:after{ content:"🔒"; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:14px; filter:none; opacity:.7;}
+
+.gviewer{ position:relative; flex:1; background:#000; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.gviewer .photo-surface{ width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-family:var(--read-font); font-style:italic; color:#a9bdb8; padding:44px; text-align:center; font-size:15px; line-height:1.6; }
+.gviewer-topbar{ position:absolute; top:0; left:0; right:0; z-index:10; display:flex; justify-content:space-between; align-items:center; padding:56px 18px 14px; background:linear-gradient(180deg,rgba(0,0,0,.55),transparent); }
+.gviewer-topbar .tb-btn{ font-size:14px; color:#fff; font-weight:600; background:rgba(255,255,255,.14); backdrop-filter:blur(6px); padding:7px 13px; border-radius:100px; cursor:pointer;}
+.gviewer-bottombar{ position:absolute; bottom:0; left:0; right:0; z-index:10; display:flex; justify-content:space-around; padding:16px 20px 30px; background:linear-gradient(0deg,rgba(0,0,0,.6),transparent); }
+.gviewer-bottombar .ic{ font-size:19px; color:#fff; cursor:pointer; opacity:.92; }
+.meta-overlay{
+  position:absolute; left:16px; right:16px; bottom:76px; background:rgba(28,32,40,.9); backdrop-filter:blur(20px);
+  border-radius:16px; padding:16px 16px 12px; transform:translateY(15px) scale(.97); opacity:0; pointer-events:none;
+  transition:transform .3s cubic-bezier(.2,.9,.25,1), opacity .3s; font-family:var(--chrome-font); z-index:9;
+}
+.meta-overlay.show{ transform:translateY(0) scale(1); opacity:1; pointer-events:auto; }
+.meta-row{ display:flex; justify-content:space-between; font-size:12.5px; padding:7px 0; border-bottom:1px solid rgba(255,255,255,.08); color:var(--text-soft); }
+.meta-row:last-child{ border-bottom:none; }
+.meta-row b{ color:var(--text); font-weight:600; }
+.meta-row.flag b{ color:var(--rust); }
+
+/* ===================================================================
+   LAPTOP — letterboxed macOS-style frame (landscape object inside portrait stage)
+   =================================================================== */
+.laptop-screen{ background:#000; display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative; padding:0 16px; }
+.laptop-hint{ position:absolute; top:56px; left:0; right:0; text-align:center; font-family:var(--tag-font); font-size:10.5px; color:#5a5f6e; letter-spacing:.1em; z-index:2; }
+.macbook-frame{
+  width:100%; aspect-ratio:15/10; border-radius:13px; overflow:hidden; position:relative;
+  background:#14161c; box-shadow:0 0 0 7px #d7d9dc, 0 0 0 8px #9a9ca1, 0 0 14px 8px rgba(0,0,0,.15), 0 40px 70px -20px rgba(0,0,0,.75);
+  display:flex; flex-direction:column;
+}
+.macbook-frame:before{ content:""; position:absolute; top:5px; left:50%; transform:translateX(-50%); width:6px;height:6px;border-radius:50%; background:#05060a; box-shadow:0 0 0 1.5px #2a2c30; z-index:20; }
+.macbook-hinge{ width:36%; height:9px; margin-top:-1px; background:linear-gradient(180deg,#c7c9cc,#a7a9ad); border-radius:0 0 6px 6px; box-shadow:0 4px 10px rgba(0,0,0,.4); }
+.mac-menubar{ height:26px; flex:none; background:rgba(235,236,238,.85); backdrop-filter:blur(20px); display:flex; align-items:center; padding:0 12px; gap:14px; font-size:11px; color:#1c1c1e; }
+.mac-menubar .apple{ font-weight:700; font-size:13px; }
+.mac-menubar b{ font-weight:700; }
+.mac-menubar .mi{ color:#3a3a3c; font-weight:500; }
+.mac-menubar .sp{ margin-left:auto; display:flex; gap:10px; color:#3a3a3c; align-items:center; font-size:10.5px; }
+.mac-body{ flex:1; position:relative; overflow:hidden; background:#15171e; display:flex; flex-direction:column; color:var(--text); }
+.mac-toolbar{ flex:none; display:flex; align-items:center; gap:10px; padding:9px 14px; border-bottom:1px solid rgba(255,255,255,.06); background:rgba(255,255,255,.02); }
+.mac-toolbar .back{ width:26px;height:26px;border-radius:7px; background:rgba(255,255,255,.06); display:flex;align-items:center;justify-content:center; cursor:pointer; font-size:13px; }
+.mac-toolbar h1{ font-size:13px; font-weight:700; margin:0; }
+.mac-toolbar .sub{ font-size:10.5px; color:var(--text-dim); }
+.mac-scroll{ flex:1; overflow-y:auto; }
+.mac-dock{ position:absolute; bottom:6px; left:50%; transform:translateX(-50%); background:rgba(255,255,255,.14); backdrop-filter:blur(16px); border-radius:13px; padding:5px 8px; display:flex; gap:7px; z-index:6; }
+.mac-dock .di{ width:28px;height:28px;border-radius:8px; box-shadow:0 3px 6px rgba(0,0,0,.3); }
+.dicon{ display:flex; flex-direction:column; align-items:center; gap:6px; width:74px; cursor:pointer; }
+.dicon .box{ width:46px;height:46px;border-radius:10px; display:flex;align-items:center;justify-content:center; font-size:20px; box-shadow:0 6px 14px -5px rgba(0,0,0,.5); position:relative; overflow:hidden;}
+.dicon .box:after{ content:""; position:absolute; inset:0; background:linear-gradient(160deg, rgba(255,255,255,.3), transparent 45%); }
+.dicon span{ font-size:10px; color:var(--text-soft); text-align:center; font-weight:600; }
+.dicon.locked{ opacity:.32; }
+.dicon.locked.active-pulse .box{ animation:pulseGlow 1.6s infinite; }
+.box.mail{ background:linear-gradient(160deg,#5cd48a,#1f9950); }
+.box.browser{ background:linear-gradient(160deg,#5aa4ff,#1f57c9); }
+.box.video{ background:linear-gradient(160deg,#ff8a5c,#c1502f); }
+.box.folder{ background:linear-gradient(160deg,#e8c162,#a8842c); }
+.desktop-icons{ padding:22px 0 0 18px; display:flex; flex-direction:column; gap:18px; align-items:flex-start; }
+
+.inbox-row{ padding:13px 16px; border-bottom:1px solid rgba(255,255,255,.05); cursor:pointer; display:flex; gap:10px;}
+.inbox-row .bullet{ width:7px;height:7px;border-radius:50%; background:#3ea2ff; margin-top:5px; flex:none; }
+.inbox-row .bullet.read{ background:transparent; }
+.inbox-row .body2{ flex:1; min-width:0; }
+.inbox-row .top{ display:flex; justify-content:space-between; margin-bottom:2px; }
+.inbox-row .from{ font-size:12.5px; font-weight:700; }
+.inbox-row .time{ font-size:10.5px; color:var(--text-dim); }
+.inbox-row .subj{ font-size:12px; color:var(--text-soft); margin-bottom:1px; font-weight:600; }
+.inbox-row .prev{ font-size:11.5px; color:var(--text-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.inbox-row .attach{ font-size:10px; color:var(--rust); font-family:var(--tag-font); margin-top:4px; }
+
+.mail-read{ padding:14px 20px 30px; font-family:var(--read-font); }
+.mail-read .subject{ font-size:16.5px; font-weight:600; margin-bottom:8px; line-height:1.3; font-family:var(--chrome-font); }
+.mail-read .from-line{ display:flex; justify-content:space-between; font-family:var(--chrome-font); font-size:11px; color:var(--text-dim); border-bottom:1px solid var(--panel-hair); padding-bottom:10px; margin-bottom:14px; }
+.mail-read .body{ font-size:13.5px; line-height:1.7; color:#dcdfe6; }
+.mail-attachment{ margin-top:16px; background:rgba(255,255,255,.04); border:1px solid var(--panel-hair); border-radius:10px; padding:10px 12px; display:flex; align-items:center; gap:10px; cursor:pointer; font-family:var(--chrome-font); }
+.mail-attachment .aic{ width:32px;height:32px;border-radius:7px; background:var(--rust-soft); display:flex;align-items:center;justify-content:center; font-size:13px;}
+.mail-attachment b{ display:block; font-size:11.5px; } .mail-attachment span{ font-size:10px; color:var(--text-dim); }
+.mail-attachment .tag{ margin-left:auto; font-family:var(--tag-font); font-size:8.5px; color:var(--rust); border:1px solid var(--rust-soft); padding:3px 6px; border-radius:5px; }
+
+.doc-overlay{ position:absolute; inset:0; z-index:60; background:#1a1a1c; display:flex; flex-direction:column; transform:translateY(100%); transition:transform .4s cubic-bezier(.2,.9,.25,1); }
+.doc-overlay.show{ transform:translateY(0); }
+.doc-page{ flex:1; margin:12px; background:var(--paper); border-radius:5px; padding:22px 20px; font-family:var(--read-font); color:var(--paper-ink); font-size:12px; line-height:1.6; overflow-y:auto; position:relative; box-shadow:0 10px 30px rgba(0,0,0,.4);}
+.doc-page h4{ font-family:var(--tag-font); font-size:11.5px; text-transform:uppercase; letter-spacing:.07em; margin-bottom:12px; }
+.redact{ background:#1c1c1c; color:transparent; padding:0 3px; border-radius:2px; cursor:pointer; position:relative; }
+.redact.solved{ background:transparent; color:var(--thread); font-weight:700; text-decoration:underline wavy var(--thread); }
+.redact-input{ position:absolute; background:#fff; border:2px solid var(--rust); border-radius:8px; padding:9px; font-family:var(--chrome-font); font-size:11px; color:#111; box-shadow:0 10px 30px rgba(0,0,0,.4); z-index:20;}
+.redact-input input{ border:1px solid #ccc; border-radius:5px; padding:5px 7px; font-size:11px; width:110px; }
+.redact-input button{ margin-left:6px; background:var(--rust); color:#fff; border:0; border-radius:5px; padding:5px 9px; font-size:10.5px; cursor:pointer; }
+
+/* ===================================================================
+   SMARTWATCH — Apple-Watch-shaped physical frame
+   =================================================================== */
+.watch-screen{ background:radial-gradient(ellipse 400px 400px at 50% 40%, #1c1f28, #060708 78%); position:relative; align-items:center; justify-content:center; display:flex; }
+.watch-band{ position:absolute; left:50%; transform:translateX(-50%); width:118px; background:linear-gradient(180deg,#221c16,#100c09); z-index:2;}
+.watch-band.top{ top:-56px; height:100px; border-radius:0 0 14px 14px; }
+.watch-band.bottom{ bottom:-56px; height:100px; border-radius:14px 14px 0 0; }
+.watch-band:after{ content:""; position:absolute; inset:10px; border:1px solid rgba(255,255,255,.05); border-radius:10px; }
+.watch-frame{ width:224px; height:224px; border-radius:54px; background:#000; position:relative; overflow:hidden; z-index:5;
+  box-shadow:0 0 0 6px #232326, 0 0 0 8px #0e0e10, 0 30px 60px rgba(0,0,0,.75), inset 0 0 0 1px rgba(255,255,255,.04); }
+.watch-crown{ position:absolute; right:-11px; top:76px; width:18px;height:36px; background:linear-gradient(90deg,#4a4a4c,#232326); border-radius:5px; z-index:9; box-shadow:2px 1px 3px rgba(0,0,0,.5), inset -2px 0 3px rgba(255,255,255,.12);}
+.watch-side-btn{ position:absolute; right:-8px; top:126px; width:13px;height:24px; background:linear-gradient(90deg,#4a4a4c,#232326); border-radius:4px; z-index:9; box-shadow:2px 1px 3px rgba(0,0,0,.5);}
+.watch-inner{ position:absolute; inset:0; border-radius:54px; overflow:hidden; display:flex; flex-direction:column; background:#000; color:#fff; }
+.watch-statusbar{ height:24px; flex:none; display:flex; align-items:center; justify-content:space-between; padding:6px 16px 0; font-size:10px; font-weight:600; color:#e2e5ea; }
+.watch-body{ flex:1; overflow:hidden; position:relative; }
+
+.watchface{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; }
+.watchface .wtime{ font-size:44px; font-weight:700; letter-spacing:-.02em; }
+.watchface .wdate{ font-size:11px; color:#8a92a3; margin-bottom:8px; }
+.watch-complications{ display:flex; gap:10px; }
+.wcomp{ width:58px;height:58px; border-radius:16px; background:rgba(255,255,255,.06); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; cursor:pointer; }
+.wcomp .ic{ font-size:16px; } .wcomp .lbl{ font-size:8.5px; color:#9aa3b5; font-weight:700; }
+.wcomp.hr .ic{ color:var(--rust); }
+.wcomp.map .ic{ color:var(--teal); }
+
+.watch-tabs{ display:flex; padding:6px 12px 6px; gap:6px; flex:none; }
+.wtab{ flex:1; text-align:center; padding:6px 0; border-radius:8px; font-size:10.5px; font-weight:700; cursor:pointer; background:rgba(255,255,255,.06); color:#9aa3b5; }
+.wtab.on{ background:var(--teal-soft); color:#dff5f0; }
+.watch-back{ position:absolute; top:5px; left:6px; z-index:20; width:22px;height:22px; border-radius:50%; background:rgba(255,255,255,.1); display:flex;align-items:center;justify-content:center; font-size:11px; cursor:pointer; }
+
+.map-wrap{ flex:1; position:relative; margin:0 6px 6px; border-radius:12px; overflow:hidden; background:#0d1210; }
+.map-svg{ width:100%; height:100%; display:block; }
+.map-pin{ cursor:pointer; }
+.map-pin circle.core{ fill:var(--teal); }
+.map-pin.flag circle.core{ fill:var(--rust); }
+.map-pin.flag circle.ring{ animation:ringPulse 1.8s infinite; }
+@keyframes ringPulse{ 0%{ r:9; opacity:.8;} 100%{ r:20; opacity:0;} }
+.map-detail{ position:absolute; left:6px; right:6px; bottom:6px; background:rgba(10,12,10,.92); border-radius:10px; padding:8px 10px; transform:translateY(120%); transition:transform .3s cubic-bezier(.2,.9,.25,1); font-size:10px;}
+.map-detail.show{ transform:translateY(0); }
+.map-detail b{ font-size:11px; } .map-detail .t{ color:#8a92a3; margin-top:1px; }
+.map-detail .flagnote{ margin-top:5px; color:var(--rust); font-family:var(--tag-font); font-size:9px; }
+
+.graph-wrap{ flex:1; margin:4px 8px; }
+.graph-wrap svg{ width:100%; height:120px; }
+.hr-now{ text-align:center; padding:0 14px 10px; }
+.hr-now b{ font-size:24px; } .hr-now span{ font-size:9.5px; color:#8a92a3; display:block; margin-top:2px; }
+
+/* ===================================================================
+   DASHCAM — HUD overlay realism
+   =================================================================== */
+.session-card{ margin:9px 16px; background:var(--panel-2); border:1px solid var(--panel-hair); border-radius:14px; padding:12px 13px; display:flex; gap:12px; align-items:center; cursor:pointer; }
+.session-card.locked{ opacity:.4; }
+.session-card.flagged{ border-color:var(--rust); box-shadow:0 0 0 1px var(--rust-soft) inset; }
+.session-thumb{ width:56px;height:40px;border-radius:6px; background:linear-gradient(160deg,#2a2f3a,#14161c); display:flex;align-items:center;justify-content:center; font-size:15px; flex:none; position:relative; overflow:hidden;}
+.session-thumb.glitch{ background:repeating-linear-gradient(115deg,#241016,#241016 3px,#3a1a20 3px,#3a1a20 6px); }
+.session-card .si b{ font-size:13px; display:block; } .session-card .si span{ font-size:11px; color:var(--text-dim); }
+.session-card .flagchip{ margin-left:auto; font-family:var(--tag-font); font-size:9px; color:var(--rust); border:1px solid var(--rust-soft); padding:3px 7px; border-radius:5px;}
+
+.player-wrap{ flex:1; background:#050505; position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.dash-video{ position:absolute; inset:0; background:
+  radial-gradient(ellipse 500px 400px at 50% 40%, rgba(60,70,80,.25), transparent 65%),
+  linear-gradient(180deg,#141a17 0%, #0a0c0a 60%, #050605 100%);
+}
+.dash-video:before{ content:""; position:absolute; inset:0; background:repeating-linear-gradient(180deg, rgba(255,255,255,.015) 0 1px, transparent 1px 2px); mix-blend-mode:overlay;}
+.dash-vignette{ position:absolute; inset:0; box-shadow:inset 0 0 110px 40px rgba(0,0,0,.65); pointer-events:none; }
+.dash-scene{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:var(--read-font); font-style:italic; color:#7d8f8a; font-size:13px; text-align:center; padding:40px; }
+.dash-rec{ position:absolute; top:16px; left:16px; display:flex; align-items:center; gap:6px; font-family:var(--mono-font); font-size:11px; color:#ff5b52; z-index:6; }
+.dash-rec .dot{ width:8px;height:8px;border-radius:50%; background:#ff2d20; animation:recBlink 1.2s infinite; }
+@keyframes recBlink{ 0%,100%{ opacity:1;} 50%{ opacity:.15;} }
+.dash-timestamp{ position:absolute; bottom:14px; left:16px; font-family:var(--mono-font); font-size:11px; color:#c9d1d9; z-index:6; text-shadow:0 1px 3px rgba(0,0,0,.8); line-height:1.5; }
+.dash-speed{ position:absolute; bottom:14px; right:16px; font-family:var(--mono-font); font-size:11px; color:#c9d1d9; z-index:6; text-shadow:0 1px 3px rgba(0,0,0,.8); text-align:right; line-height:1.5;}
+.glitch-screen{ position:absolute; inset:0; background:repeating-linear-gradient(120deg,#160a0d,#160a0d 4px,#2c1218 4px,#2c1218 9px); display:flex; align-items:center; justify-content:center; text-align:center; padding:30px; z-index:8; animation:glitchShift 3s infinite; }
+@keyframes glitchShift{ 0%,94%,100%{ transform:translateX(0);} 95%{ transform:translateX(-3px);} 97%{ transform:translateX(3px);} }
+.glitch-screen p{ font-family:var(--mono-font); color:#e08a7d; font-size:12px; line-height:1.7; }
+.scrub-bar{ padding:12px 18px 20px; background:linear-gradient(0deg,#000,transparent); flex:none;}
+.scrub-track-wrap{ position:relative; }
+.scrub-flag{ position:absolute; top:-4px; width:2px; height:10px; background:var(--rust); }
+.scrub-bar input[type=range]{ width:100%; accent-color:var(--rust); }
+.scrub-times{ display:flex; justify-content:space-between; font-size:10.5px; color:var(--text-soft); font-family:var(--mono-font); }
+.transport{ display:flex; justify-content:center; align-items:center; gap:28px; margin-top:8px; }
+.transport button{ background:none; border:0; color:var(--text); font-size:20px; cursor:pointer; }
+.transport button.play{ width:44px;height:44px;border-radius:50%; background:rgba(255,255,255,.1); display:flex;align-items:center;justify-content:center; font-size:17px;}
+
+/* ===================================================================
+   NOTEBOOK — realistic paper + spiral binding
+   =================================================================== */
+#screen-notebook{ background:radial-gradient(ellipse 500px 500px at 50% 30%, #2c2016, #100b07 75%); }
+.nb-nav{ position:relative; z-index:5; padding:2px 18px 6px;}
+.notebook-page-wrap{ flex:1; display:flex; align-items:center; padding:0 8px 18px 26px; position:relative; }
+.notebook-page{
+  flex:1; height:96%; background:
+    repeating-linear-gradient(0deg, transparent 0 33px, rgba(120,70,60,.16) 33px 34px),
+    linear-gradient(100deg, #f2e9d3 0%, #ece0c2 55%, #e6d8b6 100%);
+  border-radius:3px; box-shadow:0 22px 44px rgba(0,0,0,.55), 0 2px 0 rgba(255,255,255,.05) inset; position:relative; padding:34px 26px 26px 40px; overflow:hidden;
+}
+.notebook-page:before{ content:""; position:absolute; left:20px; top:0; bottom:0; width:1.5px; background:rgba(160,50,40,.4); }
+.notebook-page:after{ /* dog ear */ content:""; position:absolute; right:0; bottom:0; width:0; height:0;
+  border-style:solid; border-width:0 0 26px 26px; border-color:transparent transparent rgba(0,0,0,.18) transparent; filter:drop-shadow(-2px -2px 3px rgba(0,0,0,.15)); }
+.notebook-rings{ position:absolute; left:-13px; top:14px; bottom:14px; width:26px; display:flex; flex-direction:column; justify-content:space-between; z-index:6; }
+.notebook-rings i{ display:block; width:26px;height:14px; border-radius:50%; border:3px solid #9a9a9c; background:transparent; box-shadow:inset 0 1px 2px rgba(0,0,0,.4), 0 1px 1px rgba(255,255,255,.15); }
+.nb-line{ font-family:var(--hand-font); font-size:23px; color:#332a1e; line-height:34px; }
+.nb-line.l2{ margin-top:0; }
+.nb-shorthand{ display:inline-block; padding:0 3px; border-bottom:2px dotted #9a8460; cursor:pointer; color:#5a4326; transform:rotate(-1.5deg); }
+.nb-shorthand.decoded{ border-bottom:none; color:var(--thread); font-weight:700; transform:none; }
+.nb-pageno{ position:absolute; bottom:12px; right:20px; font-family:var(--tag-font); font-size:10.5px; color:#8a7c5c; }
+.nb-decode-btn{
+  position:absolute; bottom:16px; left:36px; background:linear-gradient(160deg,#b2392c,#7f2318); color:#fff; border:0; border-radius:100px;
+  padding:10px 17px; font-size:12px; font-weight:700; font-family:var(--chrome-font); cursor:pointer; box-shadow:0 10px 22px -6px rgba(156,47,36,.6);
+}
+.nb-swipe-hint{ position:absolute; top:14px; right:16px; font-family:var(--tag-font); font-size:10px; color:#8a7c5c; }
+.nb-coffee-ring{ position:absolute; width:70px;height:70px; border-radius:50%; border:3px solid rgba(120,90,50,.14); top:60px; right:36px; }
+
+.decode-overlay{ position:absolute; inset:0; z-index:60; background:rgba(8,6,4,.95); backdrop-filter:blur(6px); transform:translateY(100%); transition:transform .4s cubic-bezier(.2,.9,.25,1); display:flex; flex-direction:column; }
+.decode-overlay.show{ transform:translateY(0); }
+.key-strip{ flex:none; padding:14px 16px; display:flex; gap:8px; overflow-x:auto; border-bottom:1px solid rgba(255,255,255,.08); }
+.key-chip{ flex:none; background:var(--panel-2); border:1px solid var(--panel-hair); border-radius:10px; padding:8px 11px; text-align:center; min-width:52px; }
+.key-chip .mark{ font-family:var(--hand-font); font-size:19px; color:var(--text-soft); }
+.key-chip .val{ font-size:9.5px; color:var(--gold); font-family:var(--tag-font); margin-top:2px; }
+.key-chip.empty .val{ color:var(--text-dim); }
+.decode-body{ flex:1; padding:22px 24px; font-family:var(--hand-font); font-size:25px; line-height:2; color:#ece8dc; overflow-y:auto; }
+.candidate-pop{ position:absolute; background:var(--panel); border:1px solid var(--panel-hair); border-radius:12px; padding:8px; box-shadow:0 16px 30px rgba(0,0,0,.5); z-index:80; }
+.candidate-pop .opt{ padding:9px 12px; border-radius:8px; font-family:var(--chrome-font); font-size:13px; cursor:pointer; }
+.candidate-pop .opt:hover, .candidate-pop .opt:active{ background:var(--panel-2); }
+
+/* ===================================================================
+   EVIDENCE BOARD — realistic corkboard, polaroids, sagging string
+   =================================================================== */
+#screen-board{ background:#0e0906; }
+.board-nav{ position:relative; z-index:15; }
+.board-canvas-wrap{ flex:1; position:relative; overflow:hidden; touch-action:none; }
+.board-canvas{
+  position:absolute; width:1080px; height:1360px; left:0; top:0; transform-origin:0 0; cursor:grab;
+  background-color:#b0824c;
+  background-image:
+    radial-gradient(circle at 10% 15%, rgba(0,0,0,.20) 0 1.6px, transparent 2.4px),
+    radial-gradient(circle at 55% 70%, rgba(0,0,0,.16) 0 1.3px, transparent 2.2px),
+    radial-gradient(circle at 80% 30%, rgba(0,0,0,.14) 0 1.4px, transparent 2.3px),
+    radial-gradient(circle at 30% 85%, rgba(0,0,0,.15) 0 1.3px, transparent 2.1px),
+    linear-gradient(155deg,#c19660 0%,#a97e49 55%,#93683a 100%);
+  background-size:19px 19px, 23px 23px, 17px 17px, 21px 21px, 100% 100%;
+  box-shadow:inset 0 0 140px 60px rgba(0,0,0,.45);
+}
+.board-canvas.grabbing{ cursor:grabbing; }
+.board-strings{ position:absolute; inset:0; pointer-events:none; }
+.board-strings path{ stroke:var(--thread); stroke-width:2; fill:none; opacity:.88; filter:drop-shadow(0 2px 1px rgba(0,0,0,.25)); }
+.pin-card{
+  position:absolute; width:148px; background:#fbf8f0; border-radius:2px; padding:8px 8px 30px; cursor:grab;
+  box-shadow:0 14px 24px rgba(0,0,0,.4), 0 1px 0 rgba(255,255,255,.4) inset; transform:rotate(var(--r,0deg));
+}
+.pin-card .photo{ width:100%; aspect-ratio:4/3; border-radius:1px; margin-bottom:8px; position:relative; overflow:hidden; }
+.pin-card .cap{ font-family:var(--hand-font); font-size:15px; color:#2b2620; text-align:center; line-height:1.25; padding:0 2px; }
+.pin-card .thumbtack{ position:absolute; top:-8px; left:50%; transform:translateX(-50%); width:14px;height:14px;border-radius:50%;
+  background:radial-gradient(circle at 32% 28%, #ff7a68, var(--rust) 70%); box-shadow:0 3px 5px rgba(0,0,0,.45), inset 0 1px 1px rgba(255,255,255,.5); z-index:3;}
+.pin-card .tape{ position:absolute; top:-6px; right:10px; width:38px;height:16px; background:rgba(255,255,255,.55); transform:rotate(8deg); box-shadow:0 1px 2px rgba(0,0,0,.15); }
+.pin-card.doc{ background:#f4efe0; }
+.pin-card.doc .cap{ font-family:var(--tag-font); font-size:10.5px; text-align:left; line-height:1.55; }
+.pin-card.doc .k{ font-family:var(--tag-font); font-size:8.5px; color:var(--rust); letter-spacing:.06em; text-transform:uppercase; margin-bottom:5px; display:block;}
+
+.board-toolbar{ position:absolute; top:8px; right:8px; display:flex; gap:8px; z-index:20; }
+.board-toolbar button{ width:36px;height:36px;border-radius:50%; background:rgba(15,10,6,.6); backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,.15); color:#fff; font-size:15px; cursor:pointer; }
+.pin-detail-overlay{ position:absolute; inset:0; z-index:70; background:rgba(8,6,4,.72); display:flex; align-items:flex-end; opacity:0; pointer-events:none; transition:opacity .3s; }
+.pin-detail-overlay.show{ opacity:1; pointer-events:auto; }
+.pin-detail-sheet{ background:var(--panel); border-radius:20px 20px 0 0; width:100%; padding:20px 22px 30px; transform:translateY(100%); transition:transform .35s cubic-bezier(.2,.9,.25,1); }
+.pin-detail-overlay.show .pin-detail-sheet{ transform:translateY(0); }
+.pin-detail-sheet .k{ font-family:var(--tag-font); font-size:10.5px; color:var(--rust); letter-spacing:.06em; text-transform:uppercase; }
+.pin-detail-sheet h3{ margin:8px 0 10px; font-size:18px; }
+.pin-detail-sheet p{ font-size:14px; color:var(--text-soft); line-height:1.6; margin-bottom:18px; }
+.pin-detail-sheet .link-btn{ display:flex; justify-content:space-between; align-items:center; background:var(--panel-2); border:1px solid var(--panel-hair); border-radius:12px; padding:13px 15px; cursor:pointer; font-size:13.5px; font-weight:700; }
+
+/* ===================================================================
+   GLOBAL OVERLAYS
+   =================================================================== */
+.gnotif{ position:absolute; top:6px; left:11px; right:11px; z-index:900; background:rgba(24,28,36,.86); backdrop-filter:blur(22px) saturate(1.7); border:1px solid rgba(255,255,255,.1); border-radius:19px; padding:12px 14px; display:flex; gap:11px; align-items:center; transform:translateY(-160%); transition:transform .55s cubic-bezier(.2,.85,.3,1.15); box-shadow:0 18px 36px rgba(0,0,0,.55); }
+.gnotif.show{ transform:translateY(0); }
+.gnotif .gic{ width:34px;height:34px;border-radius:9px;background:linear-gradient(155deg,#5cb0a4,#2c5651); display:flex;align-items:center;justify-content:center; font-size:15px; flex:none; box-shadow:0 3px 8px rgba(0,0,0,.3);}
+.gnotif b{ font-size:12.8px; display:block; } .gnotif span{ font-size:12px; color:var(--text-soft); }
+
+.title-card{ position:absolute; inset:0; z-index:850; background:#050608; display:flex; align-items:center; justify-content:center; opacity:0; pointer-events:none; transition:opacity .5s; text-align:center; padding:40px; }
+.title-card.show{ opacity:1; pointer-events:auto; }
+.title-card .eyebrow{ font-family:var(--tag-font); color:var(--rust); font-size:11px; letter-spacing:.3em; margin-bottom:14px; }
+.title-card h2{ font-size:23px; font-weight:600; font-family:var(--read-font); font-style:italic; color:#eceef2; line-height:1.4; }
+
+.sheet-overlay{ position:absolute; inset:0; z-index:800; background:rgba(0,0,0,.55); opacity:0; pointer-events:none; transition:opacity .3s; }
+.sheet-overlay.show{ opacity:1; pointer-events:auto; }
+.settings-sheet{ position:absolute; left:0; right:0; bottom:0; background:var(--panel); border-radius:22px 22px 0 0; padding:10px 22px 30px; transform:translateY(100%); transition:transform .4s cubic-bezier(.2,.9,.25,1); max-height:80%; overflow-y:auto; }
+.sheet-overlay.show .settings-sheet{ transform:translateY(0); }
+.sheet-grab{ width:38px;height:5px;border-radius:3px;background:var(--panel-hair); margin:8px auto 18px; }
+.settings-sheet h3{ font-size:18px; margin:18px 0 10px; }
+.settings-sheet h3:first-of-type{ margin-top:2px; }
+.setting-row{ display:flex; justify-content:space-between; align-items:center; padding:13px 0; border-bottom:1px solid rgba(255,255,255,.06); font-size:14px; }
+.toggle{ width:44px;height:26px;border-radius:100px; background:var(--panel-hair); position:relative; cursor:pointer; flex:none; }
+.toggle.on{ background:var(--teal); }
+.toggle:after{ content:""; position:absolute; top:3px; left:3px; width:20px;height:20px;border-radius:50%; background:#fff; transition:transform .2s; }
+.toggle.on:after{ transform:translateX(18px); }
+.danger-btn{ margin-top:20px; width:100%; padding:14px; border-radius:12px; background:var(--rust-soft); border:1px solid var(--rust); color:#ffd9cf; font-weight:700; font-size:13.5px; cursor:pointer; }
+</style>
+</head>
+<body>
+
+<div id="stage">
+
+  <!-- ============ MAIN MENU ============ -->
+  <section class="screen active" id="screen-menu">
+    <div class="menu-title-wrap">
+      <div class="menu-eyebrow">a millhaven mystery</div>
+      <div class="menu-title">UNIT<br>114<span>C A S E &nbsp; F I L E</span></div>
+    </div>
+    <div class="menu-actions">
+      <div class="menu-progress">Chapter 4 of 10 · in progress</div>
+      <button class="menu-btn primary" onclick="go('hub')">Continue <span class="arrow">→</span></button>
+      <button class="menu-btn" onclick="startNewGame()">New Game <span class="arrow">→</span></button>
+      <button class="menu-btn" onclick="openSettings()">Settings <span class="arrow">→</span></button>
+    </div>
+  </section>
+
+  <!-- ============ OPENING CUTSCENE ============ -->
+  <section class="screen" id="screen-cutscene">
+    <div class="cutscene-frame on" id="cf1" style="background:linear-gradient(160deg,#332920,#0d0b09 72%);"><div class="cutscene-caption">The Millhaven County storage auction. Unit 114 — eight months unpaid.</div></div>
+    <div class="cutscene-frame" id="cf2" style="background:linear-gradient(160deg,#1c2a26,#0a0f0d 72%);"><div class="cutscene-caption">A door rolls up on a plastic tote and a duffel bag.</div></div>
+    <div class="cutscene-frame" id="cf3" style="background:radial-gradient(circle at 50% 60%, #3a5650 0%, #0a0d0c 72%);"><div class="cutscene-caption">Sam kneels. Unzips the bag.</div></div>
+    <div class="cutscene-frame" id="cf4" style="background:#000;"><div class="cutscene-caption" style="color:#7fd6c8;">A phone screen lights up in the dark.</div></div>
+    <div class="cutscene-skip" id="cutscene-skip" onclick="go('phone-lock')">Skip ›</div>
+  </section>
+
+  <!-- ============ DEVICE HUB ============ -->
+  <section class="screen" id="screen-hub">
+    <div class="statusbar" data-time="9:41"></div>
+    <div class="settings-fab" onclick="openSettings()">⚙</div>
+    <div class="hub-heading"><div class="ch">Chapter 4 — What the Water Knows</div><h2>Unit 114</h2></div>
+    <div class="hub-scroll">
+      <div class="hub-desk"></div>
+      <div class="hub-item" style="top:35%; left:8%;" onclick="go('phone-lock')">
+        <div class="device-obj obj-phone"><div class="badge-dot pulse" id="hub-phone-badge"></div></div>
+        <div class="device-label">Phone</div>
+      </div>
+      <div class="hub-item" style="top:19%; left:47%; transform:rotate(-3deg);" onclick="go('laptop-desktop')">
+        <div class="device-obj obj-laptop"><div class="lid"></div><div class="base"></div></div>
+        <div class="device-label">Laptop</div>
+      </div>
+      <div class="hub-item" style="top:55%; left:61%; transform:rotate(6deg);" onclick="go('watch-face')">
+        <div class="device-obj obj-watch"><div class="band"></div><div class="face"><div class="crown"></div><div class="badge-dot" id="hub-watch-badge"></div></div></div>
+        <div class="device-label">Smartwatch</div>
+      </div>
+      <div class="hub-item" style="top:64%; left:12%; transform:rotate(-8deg);" onclick="go('dashcam-list')">
+        <div class="device-obj obj-sd"><div class="badge-dot" id="hub-sd-badge"></div></div>
+        <div class="device-label">Dashcam SD</div>
+      </div>
+      <div class="hub-item locked" style="top:7%; left:8%; transform:rotate(4deg);">
+        <div class="device-obj obj-notebook"><div class="rings"><i></i><i></i><i></i><i></i><i></i></div></div>
+        <div class="device-label">Notebook</div>
+      </div>
+      <div class="hub-board-access" style="top:77%; left:50%;" onclick="go('board')">
+        <div class="corkboard">
+          <svg width="100%" height="100%" style="position:absolute;inset:0;"><path d="M30,30 Q55,58 80,68" stroke="#9c2f24" stroke-width="1.4" fill="none" opacity=".85"/><path d="M80,68 Q100,45 120,25" stroke="#9c2f24" stroke-width="1.4" fill="none" opacity=".85"/></svg>
+          <div class="pin" style="top:24%;left:17%;"></div><div class="pin" style="top:58%;left:50%;"></div><div class="pin" style="top:18%;left:76%;"></div>
+        </div>
+        <div class="device-label">Evidence Board</div>
+      </div>
+    </div>
+    <div class="hub-notify-toast" id="hub-toast"><div class="toast-icon">💬</div><div class="toast-txt"><b>Unknown Number</b><span>You shouldn't have opened that unit…</span></div></div>
+  </section>
+
+  <!-- ============ PHONE — LOCK ============ -->
+  <section class="screen" id="screen-phone-lock">
+    <div class="statusbar" data-time="9:41"></div>
+    <div class="lock-clock"><div class="time">9:41</div><div class="date">Thursday, March 14</div></div>
+    <div class="lock-notifs">
+      <div class="lock-notif"><div class="ic">💬</div><div class="body"><div class="toprow"><b>Unknown Number</b><time>now</time></div><span>New message</span></div></div>
+      <div class="lock-notif"><div class="ic">🎙</div><div class="body"><div class="toprow"><b>Voice Memo</b><time>2h</time></div><span>1 recording found</span></div></div>
+    </div>
+    <div class="lock-swipe-hint" onclick="revealKeypad()"><span class="chev">︿</span>swipe up to enter passcode</div>
+    <div class="lock-tray"><div class="circ">🔦</div><div class="circ">📷</div></div>
+
+    <div class="passcode-sheet" id="passcode-sheet">
+      <div class="ptitle">Enter Passcode</div>
+      <div class="psub">Try the date written on the back of the photo</div>
+      <div class="dots" id="lock-dots"><i></i><i></i><i></i><i></i></div>
+      <div class="keypad" id="keypad"></div>
+    </div>
+  </section>
+
+  <!-- ============ PHONE — HOME ============ -->
+  <section class="screen" id="screen-phone-home">
+    <div class="statusbar" data-time="9:41"></div>
+    <div class="springboard-title"><div class="k">JESS'S PHONE · UNLOCKED</div><h1>Home</h1></div>
+    <div class="phone-app-grid">
+      <div class="phone-app" onclick="go('phone-messages-list')"><div class="app-icon messages">💬<span class="abadge" id="badge-messages">1</span></div><span>Messages</span></div>
+      <div class="phone-app" onclick="go('phone-gallery-grid')"><div class="app-icon gallery">🖼</div><span>Photos</span></div>
+      <div class="phone-app" onclick="alert('Voice Memo app — same list→player pattern as Gallery/Dashcam.')"><div class="app-icon memo">🎙<span class="abadge">1</span></div><span>Voice Memos</span></div>
+      <div class="phone-app empty"><div class="app-icon"></div><span></span></div>
+    </div>
+  </section>
+
+  <!-- ============ MESSAGES — LIST ============ -->
+  <section class="screen" id="screen-phone-messages-list">
+    <div class="statusbar" data-time="9:41"></div>
+    <div class="nav-large-title"><div class="eyebrow">Jess's Phone</div><h1>Messages</h1></div>
+    <div class="scroll">
+      <div class="thread-row" onclick="openThread()">
+        <div class="thread-avatar unknown">?</div>
+        <div class="thread-meta"><div class="top"><b id="thread-list-name">Unknown Number</b><span class="time">2m</span></div><p>You shouldn't have opened that unit…</p></div>
+        <div class="thread-unread"></div>
+      </div>
+      <div class="thread-row locked">
+        <div class="thread-avatar" style="background:#2a2f3b;">··</div>
+        <div class="thread-meta"><div class="top"><b>Locked Thread</b></div><p>Requires further investigation</p></div>
+        <div class="locked-chip">LOCKED</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MESSAGES — THREAD ============ -->
+  <section class="screen" id="screen-phone-messages-thread">
+    <div class="statusbar" data-time="9:41"></div>
+    <div class="thread-nav">
+      <div class="backrow"><div class="back" onclick="go('phone-messages-list')">‹</div></div>
+      <div class="center"><div class="av">?</div><div class="nm" id="thread-header-name">Unknown Number</div></div>
+    </div>
+    <div class="chat-bg" id="chat-bg"></div>
+    <div class="chat-inputbar"><div class="plus">+</div><div class="fake-input">iMessage (choices only)</div></div>
+  </section>
+
+  <!-- ============ GALLERY — GRID ============ -->
+  <section class="screen" id="screen-phone-gallery-grid">
+    <div class="statusbar" data-time="9:41"></div>
+    <div class="nav-large-title"><div class="eyebrow">Jess's Phone</div><h1>Photos</h1></div>
+    <div class="photos-segment"><span class="on">Days</span><span>Months</span><span>Years</span><span>All Photos</span></div>
+    <div class="scroll">
+      <div class="gallery-date">March 2 — the tote</div>
+      <div class="gallery-grid">
+        <div class="gthumb" style="background:linear-gradient(160deg,#3a4a4a,#12211f);" onclick="openPhoto()"></div>
+        <div class="gthumb locked"></div><div class="gthumb locked"></div><div class="gthumb locked"></div>
+      </div>
+      <div class="gallery-date">Two weeks before disappearance</div>
+      <div class="gallery-grid">
+        <div class="gthumb locked"></div><div class="gthumb locked"></div><div class="gthumb locked"></div><div class="gthumb locked"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GALLERY — VIEWER ============ -->
+  <section class="screen" id="screen-phone-gallery-viewer">
+    <div class="gviewer">
+      <div class="photo-surface" style="background:linear-gradient(160deg,#3a4a4a,#12211f);">A printed photo, corner torn — two people at a lake, laughing. A date is handwritten on the back.</div>
+      <div class="gviewer-topbar"><span class="tb-btn" onclick="go('phone-gallery-grid')">Done</span><span class="tb-btn" onclick="toggleMeta()">ⓘ Info</span></div>
+      <div class="gviewer-bottombar"><span class="ic">↑</span><span class="ic">♡</span><span class="ic">✎</span><span class="ic">🗑</span></div>
+      <div class="meta-overlay" id="meta-overlay">
+        <div class="meta-row"><span>DATE TAKEN</span><b>03 · 14 · 2006</b></div>
+        <div class="meta-row"><span>LOCATION</span><b>Millhaven Lake</b></div>
+        <div class="meta-row flag"><span>CAPTION</span><b>"the code is the date — 0314"</b></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ LAPTOP — DESKTOP ============ -->
+  <section class="screen laptop-screen" id="screen-laptop-desktop">
+    <div class="laptop-hint">JESS'S LAPTOP</div>
+    <div class="macbook-frame">
+      <div class="mac-menubar"><span class="apple"></span><b>Finder</b><span class="mi">File</span><span class="mi">Edit</span><span class="mi">View</span><span class="sp"><span>🔋</span><span>📶</span><span>9:41</span></span></div>
+      <div class="mac-body">
+        <div class="desktop-icons">
+          <div class="dicon" onclick="go('laptop-inbox')"><div class="box mail">✉</div><span>Email</span></div>
+          <div class="dicon" onclick="alert('Browser Sim — reverse-chronological history list, static authored pages.')"><div class="box browser">🌐</div><span>Browser</span></div>
+          <div class="dicon" onclick="alert('Video Editor Sim — clip bin above, preview player below. One clip corrupted until Ch.6.')"><div class="box video">🎞</div><span>Video Project</span></div>
+          <div class="dicon locked"><div class="box folder">🔒</div><span>Locked Folder</span></div>
+        </div>
+        <div class="mac-dock"><div class="di box mail" style="width:30px;height:30px;"></div><div class="di box browser" style="width:30px;height:30px;"></div><div class="di box video" style="width:30px;height:30px;"></div></div>
+      </div>
+    </div>
+    <div class="macbook-hinge"></div>
+  </section>
+
+  <!-- ============ LAPTOP — INBOX ============ -->
+  <section class="screen laptop-screen" id="screen-laptop-inbox">
+    <div class="laptop-hint">JESS'S LAPTOP</div>
+    <div class="macbook-frame">
+      <div class="mac-menubar"><span class="apple"></span><b>Mail</b><span class="mi">File</span><span class="mi">Edit</span><span class="mi">Message</span><span class="sp"><span>9:41</span></span></div>
+      <div class="mac-body">
+        <div class="mac-toolbar"><div class="back" onclick="go('laptop-desktop')">‹</div><div><h1>Inbox</h1><div class="sub">3 messages</div></div></div>
+        <div class="mac-scroll">
+          <div class="inbox-row" onclick="go('laptop-reading')"><div class="bullet"></div><div class="body2"><div class="top"><span class="from">Millhaven County Records Office</span><span class="time">Feb 11</span></div><div class="subj">RE: Records Request — Billing Summary</div><div class="prev">Attached is the summary you requested. Some fields have been redacted per policy 4.1(c)…</div><div class="attach">📎 billing_summary.pdf — inspectable</div></div></div>
+          <div class="inbox-row" onclick="go('laptop-reading')"><div class="bullet"></div><div class="body2"><div class="top"><span class="from">R.</span><span class="time">Feb 3</span></div><div class="subj">Re: Re: can we talk off the record</div><div class="prev">I told you everything I'm going to. Stop calling the diner.</div></div></div>
+          <div class="inbox-row"><div class="bullet read"></div><div class="body2"><div class="top"><span class="from">Sarah — Longform Editor</span><span class="time">Jan 22</span></div><div class="subj">Re: pitch — "What the Water Knows"</div><div class="prev">This is good, Jess, but I need sourcing before I can run it. Who's "R."?</div></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="macbook-hinge"></div>
+  </section>
+
+  <!-- ============ LAPTOP — READING VIEW ============ -->
+  <section class="screen laptop-screen" id="screen-laptop-reading">
+    <div class="laptop-hint">JESS'S LAPTOP</div>
+    <div class="macbook-frame">
+      <div class="mac-menubar"><span class="apple"></span><b>Mail</b><span class="mi">File</span><span class="mi">Edit</span><span class="mi">Message</span><span class="sp"><span>9:41</span></span></div>
+      <div class="mac-body">
+        <div class="mac-toolbar"><div class="back" onclick="go('laptop-inbox')">‹</div><div><h1>Records Request</h1></div></div>
+        <div class="mac-scroll mail-read">
+          <div class="subject">RE: Records Request — Billing Summary</div>
+          <div class="from-line"><span>Millhaven County Records Office</span><span>Feb 11</span></div>
+          <div class="body">Ms. Cole,<br><br>Attached is the summary you requested for the Low Row cluster. Per office policy, patient identifiers have been redacted; procedure and diagnosis codes are intact. A legend for the code prefixes is on file in our prior correspondence, should you need it.<br><br>Regards,<br>Records Office</div>
+          <div class="mail-attachment" onclick="openDoc()"><div class="aic">📄</div><div><b>billing_summary.pdf</b><span>1 page · redacted</span></div><div class="tag">TAP TO INSPECT</div></div>
+        </div>
+
+        <div class="doc-overlay" id="doc-overlay">
+          <div class="mac-toolbar"><div class="back" onclick="closeDoc()">‹</div><div><h1 style="font-size:12.5px;">billing_summary.pdf</h1></div></div>
+          <div class="doc-page" id="doc-page">
+            <h4>Low Row Cluster — Billing Summary</h4>
+            <p>Patient: <span class="redact" onclick="showRedactInput(event,'name')" id="redact-name">REDACTED NAME</span><br>
+            Procedure code: <span class="redact" onclick="showRedactInput(event,'code')" id="redact-code">REDACTED CODE</span><br>
+            Diagnosis: chronic exposure, unspecified cause.<br><br>
+            Legend cross-reference required — code prefix "LR-" maps to canal-adjacent addresses per attached zoning key (see separate email thread).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="macbook-hinge"></div>
+  </section>
+
+  <!-- ============ SMARTWATCH ============ -->
+  <section class="screen" id="screen-watch-face">
+    <div class="watch-screen">
+      <div class="watch-band top"></div><div class="watch-band bottom"></div>
+      <div class="watch-frame">
+        <div class="watch-crown"></div><div class="watch-side-btn"></div>
+        <div class="watch-inner">
+          <div class="watch-statusbar"><span>9:41</span><span>●</span></div>
+          <div class="watch-body">
+            <div class="watchface">
+              <div class="wtime">9:41</div><div class="wdate">THU MAR 14</div>
+              <div class="watch-complications">
+                <div class="wcomp hr" onclick="go('watch-map'); watchTab('graph');"><span class="ic">♡</span><span class="lbl">142 BPM</span></div>
+                <div class="wcomp map" onclick="go('watch-map'); watchTab('map');"><span class="ic">◎</span><span class="lbl">GPS LOG</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="watch-back" onclick="go('hub')" style="position:absolute; top:60px; left:24px;">‹</div>
+  </section>
+
+  <section class="screen" id="screen-watch-map">
+    <div class="watch-screen">
+      <div class="watch-band top"></div><div class="watch-band bottom"></div>
+      <div class="watch-frame">
+        <div class="watch-crown"></div><div class="watch-side-btn"></div>
+        <div class="watch-inner">
+          <div class="watch-back" onclick="go('watch-face')">‹</div>
+          <div class="watch-statusbar" style="padding-left:34px;"><span>Smartwatch</span><span>●</span></div>
+          <div class="watch-tabs"><div class="wtab on" id="tab-map" onclick="watchTab('map')">GPS Map</div><div class="wtab" id="tab-graph" onclick="watchTab('graph')">Heart Rate</div></div>
+          <div class="watch-body">
+            <div id="watch-map-view" style="height:100%; display:flex; flex-direction:column;">
+              <div class="map-wrap">
+                <svg class="map-svg" viewBox="0 0 300 340">
+                  <rect width="300" height="340" fill="#0d1210"/>
+                  <path d="M20,300 Q80,260 90,180 T150,60" stroke="#2c5651" stroke-width="9" fill="none" opacity=".5"/>
+                  <path d="M20,300 Q80,260 90,180 T150,60" stroke="#4e9e93" stroke-width="2" fill="none" stroke-dasharray="4 5"/>
+                  <g class="map-pin" onclick="showPin('diner')"><circle cx="90" cy="180" r="7" class="core"/></g>
+                  <g class="map-pin" onclick="showPin('canal')"><circle cx="150" cy="60" r="7" class="core"/></g>
+                  <g class="map-pin" onclick="showPin('mill')"><circle cx="230" cy="90" r="7" class="core"/></g>
+                  <g class="map-pin flag" onclick="showPin('spike')"><circle cx="105" cy="165" r="9" class="ring" fill="none" stroke="#c1502f" stroke-width="2"/><circle cx="105" cy="165" r="6" class="core"/></g>
+                  <text x="98" y="200" fill="#6f7c78" font-size="9" font-family="Manrope">Ray's Diner</text>
+                  <text x="158" y="55" fill="#6f7c78" font-size="9" font-family="Manrope">Canal / Mill</text>
+                </svg>
+                <div class="map-detail" id="map-detail"><b id="map-detail-title">—</b><div class="t" id="map-detail-time">—</div><div class="flagnote" id="map-detail-flag" style="display:none;"></div></div>
+              </div>
+            </div>
+            <div id="watch-graph-view" style="display:none; height:100%;">
+              <div class="graph-wrap"><svg viewBox="0 0 320 140"><polyline points="0,95 30,93 60,97 90,90 105,25 120,95 150,93 180,97 210,91 240,94 270,96 300,92" fill="none" stroke="#4e9e93" stroke-width="2"/><circle cx="105" cy="25" r="5" fill="#c1502f" onclick="showPin('spike')"/></svg></div>
+              <div class="hr-now"><b style="color:var(--rust);">142 bpm</b><span>spike 11:47 PM · tap map to cross-reference</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DASHCAM — SESSION LIST ============ -->
+  <section class="screen" id="screen-dashcam-list">
+    <div class="statusbar" data-time="9:41"></div>
+    <div class="nav-large-title"><div class="eyebrow">Dashcam SD Card</div><h1>Sessions</h1></div>
+    <div class="scroll">
+      <div class="session-card flagged" onclick="go('dashcam-player')"><div class="session-thumb">🚗</div><div class="si"><b>Session 04 — Feb 9, 11:20 PM</b><span>Parked · 41 min</span></div><div class="flagchip">FLAGGED</div></div>
+      <div class="session-card" onclick="go('dashcam-player')"><div class="session-thumb">🚗</div><div class="si"><b>Session 03 — Feb 7, 10:50 PM</b><span>Parked · 22 min</span></div></div>
+      <div class="session-card locked"><div class="session-thumb">🔒</div><div class="si"><b>Session 02</b><span>Requires further investigation</span></div></div>
+      <div class="session-card locked"><div class="session-thumb">🔒</div><div class="si"><b>Session 01</b><span>Requires further investigation</span></div></div>
+    </div>
+  </section>
+
+  <!-- ============ DASHCAM — PLAYER ============ -->
+  <section class="screen" id="screen-dashcam-player">
+    <div class="dev-header" style="position:absolute;top:44px;left:0;right:0;z-index:10;"><div class="back" onclick="go('dashcam-list')" style="background:rgba(0,0,0,.5);">‹</div></div>
+    <div class="player-wrap">
+      <div class="dash-video"></div>
+      <div class="dash-scene">Parked across the street. Neon sign flickering in the diner window. Nothing moves for minutes at a time.</div>
+      <div class="dash-vignette"></div>
+      <div class="dash-rec"><span class="dot"></span>REC</div>
+      <div class="dash-timestamp">2026-02-09&nbsp;23:20:14<br>34.187°N&nbsp;−91.552°W</div>
+      <div class="dash-speed">0 MPH<br>PARKED</div>
+      <div class="glitch-screen" id="glitch-screen"><p>⚠ FILE CORRUPTED<br>TIMESTAMP MISMATCH<br><br>repair key required<br>from another device</p></div>
+    </div>
+    <div class="scrub-bar">
+      <div class="scrub-track-wrap"><input type="range" min="0" max="100" value="30" oninput="scrubDashcam(this.value)"></div>
+      <div class="scrub-times"><span id="scrub-time">14:02</span><span>41:00</span></div>
+      <div class="transport"><button onclick="alert('Frame-back nudge')">⏮</button><button class="play" onclick="alert('Play/pause — sped-up default playback')">▶</button><button onclick="alert('Frame-forward nudge')">⏭</button></div>
+    </div>
+  </section>
+
+  <!-- ============ NOTEBOOK — PAGE VIEWER ============ -->
+  <section class="screen" id="screen-notebook">
+    <div class="nb-nav"><div class="dev-header" style="padding:2px 0 0;"><div class="back" onclick="go('hub')">‹</div><div><h1>Jess's Notebook</h1></div></div></div>
+    <div class="notebook-page-wrap">
+      <div class="notebook-page">
+        <div class="notebook-rings"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="nb-coffee-ring"></div>
+        <div class="nb-line"><span class="nb-shorthand" data-mark="A" onclick="tapShorthand('A')">◇⟡◇</span> was there the night <span class="nb-shorthand" data-mark="B" onclick="tapShorthand('B')">≈⋈</span> "drowned." Everyone got real good at not saying so.</div>
+        <div class="nb-pageno">pg. 14</div>
+        <div class="nb-swipe-hint">‹ swipe ›</div>
+        <button class="nb-decode-btn" onclick="openDecode()">Decode ›</button>
+      </div>
+    </div>
+
+    <div class="decode-overlay" id="decode-overlay">
+      <div class="dev-header" style="padding-top:16px;"><div class="back" onclick="closeDecode()">‹</div><div><h1 style="font-size:15px;">Decode Key</h1></div></div>
+      <div class="key-strip">
+        <div class="key-chip"><div class="mark">◇</div><div class="val">GRANT</div></div>
+        <div class="key-chip"><div class="mark">⟡</div><div class="val">FAM.</div></div>
+        <div class="key-chip empty"><div class="mark">≈</div><div class="val">? tap</div></div>
+        <div class="key-chip empty"><div class="mark">⋈</div><div class="val">? tap</div></div>
+      </div>
+      <div class="decode-body">
+        <span class="nb-shorthand decoded">GRANT FAM.</span> was there the night
+        <span class="nb-shorthand" onclick="tapShorthand2(event,'≈')">≈</span><span class="nb-shorthand" onclick="tapShorthand2(event,'⋈')">⋈</span>
+        "drowned." Everyone got real good at not saying so.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ EVIDENCE BOARD ============ -->
+  <section class="screen" id="screen-board">
+    <div class="board-nav"><div class="dev-header" style="padding:2px 18px 8px;"><div class="back" onclick="go('hub')">‹</div><div><h1>Evidence Board</h1></div></div></div>
+    <div class="board-toolbar"><button onclick="zoomBoard(1.15)">+</button><button onclick="zoomBoard(.87)">−</button></div>
+    <div class="board-canvas-wrap" id="board-wrap">
+      <div class="board-canvas" id="board-canvas">
+        <svg class="board-strings" width="1080" height="1360">
+          <path d="M120,150 Q220,175 330,230"></path>
+          <path d="M330,230 Q230,300 150,380"></path>
+          <path d="M330,230 Q420,190 520,180"></path>
+        </svg>
+        <div class="pin-card" style="top:110px;left:56px;--r:-2deg;" onclick="openPin('ray')">
+          <div class="thumbtack"></div><div class="tape"></div>
+          <div class="photo" style="background:linear-gradient(160deg,#6b5a44,#2a2018);"></div>
+          <div class="cap">Ray Holt — diner owner. Birthdate doesn't match county records.</div>
+        </div>
+        <div class="pin-card doc" style="top:190px;left:280px;--r:1.5deg;" onclick="openPin('gps')">
+          <div class="thumbtack"></div>
+          <span class="k">GPS · Smartwatch</span><div class="cap">Heart-rate spike, Feb 9, 11:47PM — unexplained.</div>
+        </div>
+        <div class="pin-card doc" style="top:340px;left:96px;--r:-3deg;" onclick="openPin('quote')">
+          <div class="thumbtack"></div>
+          <span class="k">Voice Memo</span><div class="cap">"We all knew Danny didn't go in that water."</div>
+        </div>
+        <div class="pin-card" style="top:150px;left:480px;--r:2deg;" onclick="openPin('grant')">
+          <div class="thumbtack"></div><div class="tape"></div>
+          <div class="photo" style="background:linear-gradient(160deg,#5a4638,#1c140e);"></div>
+          <div class="cap">Ellen Grant — mayor, present at the canal 20 yrs ago.</div>
+        </div>
+      </div>
+    </div>
+    <div class="pin-detail-overlay" id="pin-detail-overlay" onclick="if(event.target===this) closePin()">
+      <div class="pin-detail-sheet">
+        <div class="k" id="pin-k">Person</div><h3 id="pin-title">Ray Holt</h3><p id="pin-body">Runs the town diner. Medical intake birthdate doesn't match any county birth certificate on file.</p>
+        <div class="link-btn" onclick="go('laptop-inbox'); closePin();"><span>View in original context</span><span>→</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- home indicator (persistent gesture bar) -->
+  <div id="home-indicator" onclick="go('hub')"></div>
+
+  <!-- global overlays -->
+  <div class="gnotif" id="gnotif" onclick="openThreadFromNotif()"><div class="gic">💬</div><div><b>Unknown Number</b><span>Start with the hospital records.</span></div></div>
+  <div class="title-card" id="title-card"><div><div class="eyebrow">three days later</div><h2>The laptop stays zipped in its sleeve. The phone doesn't stop lighting up.</h2></div></div>
+  <div class="sheet-overlay" id="sheet-overlay" onclick="if(event.target===this) closeSettings()">
+    <div class="settings-sheet">
+      <div class="sheet-grab"></div>
+      <h3>Accessibility</h3>
+      <div class="setting-row"><span>Text size</span><input type="range" min="1" max="3" value="2" style="width:120px;accent-color:var(--teal);"></div>
+      <div class="setting-row"><span>Screen reader labels</span><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      <h3>Audio</h3>
+      <div class="setting-row"><span>Dialogue volume</span><input type="range" min="0" max="100" value="80" style="width:120px;accent-color:var(--teal);"></div>
+      <div class="setting-row"><span>Ambient / music</span><input type="range" min="0" max="100" value="55" style="width:120px;accent-color:var(--teal);"></div>
+      <h3>Data</h3>
+      <div class="setting-row"><span>Chapter 4 of 10</span><span style="color:var(--text-dim);">32% complete</span></div>
+      <button class="danger-btn" onclick="if(confirm('Erase all save data? This cannot be undone.')) alert('Save data erased.')">Erase Save Data</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ============================ STATUS BAR PAINT ============================ */
+function paintStatusBars(){
+  var svgSignal = '<svg class="sb-ic" viewBox="0 0 18 12" width="17" height="12"><rect x="0" y="7" width="3" height="5" rx="0.6" fill="currentColor"/><rect x="4.5" y="5" width="3" height="7" rx="0.6" fill="currentColor"/><rect x="9" y="3" width="3" height="9" rx="0.6" fill="currentColor"/><rect x="13.5" y="0" width="3" height="12" rx="0.6" fill="currentColor"/></svg>';
+  var svgWifi = '<svg class="sb-ic" viewBox="0 0 16 12" width="16" height="12"><path d="M8 10.4a1.3 1.3 0 100 2.6 1.3 1.3 0 000-2.6z" fill="currentColor"/><path d="M8 7.3c-1.7 0-3.2.6-4.4 1.7l1.3 1.4A4.4 4.4 0 018 9.2c1.2 0 2.3.4 3.1 1.2l1.3-1.4A6.4 6.4 0 008 7.3z" fill="currentColor" opacity=".85"/><path d="M8 4.2c-2.6 0-5 .9-6.9 2.6l1.3 1.4A8.4 8.4 0 018 5.9c2.2 0 4.1.8 5.6 2.3l1.3-1.5A10.4 10.4 0 008 4.2z" fill="currentColor" opacity=".55"/></svg>';
+  document.querySelectorAll('.statusbar').forEach(function(sb){
+    var time = sb.getAttribute('data-time') || '9:41';
+    sb.innerHTML = '<span class="sb-time">'+time+'</span><div class="sb-right">'+svgSignal+svgWifi+'<span class="battery"><i></i></span></div>';
+  });
+}
+paintStatusBars();
+
+/* ============================ NAV ============================ */
+var current = 'menu';
+var HIDE_HOME_ON = ['menu','cutscene','hub','phone-lock'];
+function el(id){ return document.getElementById('screen-'+id); }
+function go(id){
+  var from = el(current);
+  var to = el(id);
+  if(from) from.classList.remove('active');
+  if(to){ to.classList.add('active'); }
+  current = id;
+  var hi = document.getElementById('home-indicator');
+  hi.classList.toggle('off', HIDE_HOME_ON.indexOf(id) !== -1);
+  var darkScreens = ['laptop-desktop','laptop-inbox','laptop-reading','watch-face','watch-map','dashcam-player','notebook','board'];
+  hi.classList.toggle('dark', false);
+}
+go('menu');
+
+/* keypad build */
+(function(){
+  var pad = document.getElementById('keypad');
+  var rows = [['1',''],['2','ABC'],['3','DEF'],['4','GHI'],['5','JKL'],['6','MNO'],['7','PQRS'],['8','TUV'],['9','WXYZ'],['',''],['0',''],['⌫','']];
+  rows.forEach(function(pair){
+    var d = pair[0];
+    var k = document.createElement('div');
+    k.className='key';
+    if(d===''){ k.style.visibility='hidden'; }
+    else{
+      k.innerHTML = d + (pair[1] ? '<span class="sub">'+pair[1]+'</span>' : '');
+      k.onclick = function(){ pressKey(d); };
+    }
+    pad.appendChild(k);
+  });
+})();
+var entered = '';
+var PASSCODE = '0314';
+function revealKeypad(){ document.getElementById('passcode-sheet').classList.add('show'); }
+function pressKey(d){
+  var dots = document.getElementById('lock-dots').children;
+  if(d==='⌫'){ entered = entered.slice(0,-1); }
+  else if(entered.length<4){ entered += d; }
+  for(var i=0;i<4;i++){ dots[i].classList.toggle('filled', i<entered.length); }
+  if(entered.length===4){
+    setTimeout(function(){
+      if(entered===PASSCODE){ go('phone-home'); document.getElementById('passcode-sheet').classList.remove('show'); entered=''; for(var i=0;i<4;i++)dots[i].classList.remove('filled'); }
+      else{
+        document.getElementById('lock-dots').classList.add('shake');
+        setTimeout(function(){ document.getElementById('lock-dots').classList.remove('shake'); entered=''; for(var i=0;i<4;i++)dots[i].classList.remove('filled'); },350);
+      }
+    },160);
+  }
+}
+
+/* messages thread */
+function openThread(){ go('phone-messages-thread'); renderChat(); document.getElementById('badge-messages').style.display='none'; }
+function renderChat(){
+  var box = document.getElementById('chat-bg');
+  box.innerHTML =
+    '<div class="date-divider">Thursday 9:38 PM</div>'+
+    '<div class="bubble-row theirs"><div class="bubble">You shouldn\'t have opened that unit.</div></div>'+
+    '<div class="bubble-row theirs"><div class="bubble">But since you did — keep going. Start with the <span class="pin-word" onclick="pinToBoard(event,\'hospital records\')">hospital records</span>.</div></div>';
+  setTimeout(function(){
+    var t = document.createElement('div'); t.className='bubble-row theirs typing-row';
+    t.innerHTML = '<div class="bubble"><i></i><i></i><i></i></div>';
+    box.appendChild(t); box.scrollTop = box.scrollHeight;
+    setTimeout(function(){
+      box.removeChild(t);
+      var m = document.createElement('div'); m.className='bubble-row theirs';
+      m.innerHTML = '<div class="bubble">Look for a name that keeps circling back: <span class="pin-word" onclick="pinToBoard(event,\'Ray Holt\')">Ray Holt</span>.</div>';
+      box.appendChild(m); box.scrollTop = box.scrollHeight;
+    }, 1400);
+  }, 900);
+}
+function pinToBoard(e, label){
+  var chip = document.createElement('div');
+  chip.textContent = '📌'; chip.className='pin-flight';
+  var r = e.target.getBoundingClientRect();
+  var stage = document.getElementById('stage').getBoundingClientRect();
+  chip.style.left = (r.left - stage.left) + 'px';
+  chip.style.top = (r.top - stage.top) + 'px';
+  document.getElementById('stage').appendChild(chip);
+  requestAnimationFrame(function(){ chip.style.transform = 'translate(150px,-500px) scale(.3)'; chip.style.opacity = '0'; });
+  setTimeout(function(){ chip.remove(); }, 650);
+}
+function openThreadFromNotif(){ document.getElementById('gnotif').classList.remove('show'); go('phone-messages-thread'); renderChat(); }
+
+/* gallery */
+function openPhoto(){ go('phone-gallery-viewer'); }
+function toggleMeta(){ document.getElementById('meta-overlay').classList.toggle('show'); }
+
+/* redacted doc */
+function openDoc(){ document.getElementById('doc-overlay').classList.add('show'); }
+function closeDoc(){ document.getElementById('doc-overlay').classList.remove('show'); }
+function showRedactInput(e, field){
+  e.stopPropagation();
+  document.querySelectorAll('.redact-input').forEach(function(x){x.remove();});
+  var box = document.createElement('div'); box.className='redact-input';
+  var page = document.getElementById('doc-page'); var pr = page.getBoundingClientRect(); var tr = e.target.getBoundingClientRect();
+  box.style.left = (tr.left - pr.left) + 'px'; box.style.top = (tr.bottom - pr.top + 8) + 'px';
+  box.innerHTML = 'Enter code from legend: <br><input type="text" placeholder="e.g. LR-04"><button onclick="solveRedact(\''+field+'\', this)">✓</button>';
+  page.appendChild(box);
+}
+function solveRedact(field, btn){
+  var target = document.getElementById('redact-'+field);
+  target.textContent = field==='name' ? 'J. MARSH (minor, 2004)' : 'LR-04';
+  target.classList.add('solved');
+  btn.closest('.redact-input').remove();
+}
+
+/* watch */
+function watchTab(t){
+  document.getElementById('tab-map').classList.toggle('on', t==='map');
+  document.getElementById('tab-graph').classList.toggle('on', t==='graph');
+  document.getElementById('watch-map-view').style.display = t==='map' ? '' : 'none';
+  document.getElementById('watch-graph-view').style.display = t==='graph' ? '' : 'none';
+}
+var PIN_DATA = {
+  diner:{ t:'Ray Holt\'s Diner', time:'Parked 4 nights · 10:40 PM avg', flag:null },
+  canal:{ t:'The Canal', time:'Visited once, 20 min · Feb 12', flag:null },
+  mill:{ t:'Grant Paper Mill', time:'Perimeter only, no entry logged', flag:null },
+  spike:{ t:'Unexplained Spike', time:'Feb 9, 11:47 PM · 142 bpm', flag:'No message or photo attached.' }
+};
+function showPin(id){
+  var d = PIN_DATA[id];
+  document.getElementById('map-detail-title').textContent = d.t;
+  document.getElementById('map-detail-time').textContent = d.time;
+  var fn = document.getElementById('map-detail-flag');
+  if(d.flag){ fn.style.display='block'; fn.textContent = '⚑ '+d.flag; } else { fn.style.display='none'; }
+  document.getElementById('map-detail').classList.add('show');
+  if(id==='spike'){ watchTab('map'); }
+}
+
+/* dashcam */
+function scrubDashcam(v){
+  var m = Math.floor(v/100*41);
+  document.getElementById('scrub-time').textContent = String(m).padStart(2,'0')+':00';
+}
+
+/* notebook decode */
+function openDecode(){ document.getElementById('decode-overlay').classList.add('show'); }
+function closeDecode(){ document.getElementById('decode-overlay').classList.remove('show'); }
+function tapShorthand(mark){ openDecode(); }
+function tapShorthand2(e, mark){
+  document.querySelectorAll('.candidate-pop').forEach(function(x){x.remove();});
+  var pop = document.createElement('div'); pop.className='candidate-pop';
+  var r = e.target.getBoundingClientRect(); var stage = document.getElementById('stage').getBoundingClientRect();
+  pop.style.left = (r.left-stage.left)+'px'; pop.style.top=(r.bottom-stage.top+6)+'px';
+  var opts = mark==='≈' ? ['DANNY','JESS','RAY'] : ['MARSH','GRANT','HOLT'];
+  pop.innerHTML = opts.map(function(o){ return '<div class="opt" onclick="confirmDecode(this,\''+mark+'\',\''+o+'\')">'+o+'</div>'; }).join('');
+  document.getElementById('stage').appendChild(pop);
+}
+function confirmDecode(el, mark, word){
+  document.querySelectorAll('.nb-shorthand').forEach(function(s){ if(s.textContent===mark){ s.textContent=word; s.classList.add('decoded'); } });
+  document.querySelectorAll('.key-chip').forEach(function(c){ if(c.querySelector('.mark').textContent===mark){ c.classList.remove('empty'); c.querySelector('.val').textContent=word; } });
+  el.closest('.candidate-pop').remove();
+}
+
+/* evidence board pan/zoom */
+(function(){
+  var canvas = document.getElementById('board-canvas');
+  var wrap = document.getElementById('board-wrap');
+  var scale = 0.58, tx=-260, ty=-110, dragging=false, sx=0, sy=0, ox=0, oy=0;
+  function apply(){ canvas.style.transform = 'translate('+tx+'px,'+ty+'px) scale('+scale+')'; }
+  apply();
+  wrap.addEventListener('pointerdown', function(e){
+    if(e.target.closest('.pin-card')) return;
+    dragging=true; sx=e.clientX; sy=e.clientY; ox=tx; oy=ty; canvas.classList.add('grabbing');
+  });
+  window.addEventListener('pointermove', function(e){ if(!dragging) return; tx = ox + (e.clientX-sx); ty = oy + (e.clientY-sy); apply(); });
+  window.addEventListener('pointerup', function(){ dragging=false; canvas.classList.remove('grabbing'); });
+  window.zoomBoard = function(f){ scale = Math.max(.3,Math.min(1.4, scale*f)); apply(); };
+})();
+var PIN_INFO = {
+  ray:{k:'Person', title:'Ray Holt', body:"Runs the town diner. Medical intake birthdate doesn't match any county birth certificate on file."},
+  gps:{k:'GPS · Smartwatch', title:'Heart-Rate Spike', body:'Feb 9, 11:47 PM, 142 bpm — no message or photo attached. Unresolved.'},
+  quote:{k:'Voice Memo · Phone', title:'Mill Worker Interview', body:'"We all knew Danny didn\'t go in that water. Some of us just got real good at not saying so."'},
+  grant:{k:'Person', title:'Ellen Grant', body:'Mayor of Millhaven. Present at the canal the night Danny "drowned," twenty years ago.'}
+};
+function openPin(id){
+  var d = PIN_INFO[id];
+  document.getElementById('pin-k').textContent = d.k;
+  document.getElementById('pin-title').textContent = d.title;
+  document.getElementById('pin-body').textContent = d.body;
+  document.getElementById('pin-detail-overlay').classList.add('show');
+}
+function closePin(){ document.getElementById('pin-detail-overlay').classList.remove('show'); }
+
+/* settings sheet */
+function openSettings(){ document.getElementById('sheet-overlay').classList.add('show'); }
+function closeSettings(){ document.getElementById('sheet-overlay').classList.remove('show'); }
+
+/* new game -> cutscene sequence */
+function startNewGame(){
+  go('cutscene');
+  var frames = ['cf1','cf2','cf3','cf4']; var i=0;
+  var iv = setInterval(function(){
+    document.getElementById(frames[i]).classList.remove('on'); i++;
+    if(i>=frames.length){ clearInterval(iv); setTimeout(function(){ go('phone-lock'); },1000); return; }
+    document.getElementById(frames[i]).classList.add('on');
+  }, 2200);
+  setTimeout(function(){ document.getElementById('cutscene-skip').classList.add('show'); }, 3000);
+}
+
+/* global notification banner demo */
+setTimeout(function(){ if(current==='hub'){ document.getElementById('gnotif').classList.add('show'); } }, 2600);
+function showTitleCard(){ document.getElementById('title-card').classList.add('show'); setTimeout(function(){ document.getElementById('title-card').classList.remove('show'); go('hub'); }, 2600); }
+</script>
+</body>
+</html>

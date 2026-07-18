@@ -9,23 +9,23 @@ type BeforeAfterPairProps = {
 
 export default function BeforeAfterPair({ beforeSrc, afterSrc, caption }: BeforeAfterPairProps) {
   return (
-    <figure className="flex flex-col items-center">
+    <figure className="flex flex-col items-center group">
       <div className="flex items-center gap-6 md:gap-10">
         <div className="flex flex-col items-center gap-3">
-          <CircleFrame src={beforeSrc} alt="Resident before care at GBSS shelter" size={140} />
-          <span className="text-[12px] font-display font-600 uppercase tracking-wide text-charcoal">
+          <CircleFrame src={beforeSrc} alt="Resident before care at GBSS shelter" />
+          <span className="text-[12px] font-display font-600 uppercase tracking-wide text-charcoal transition-colors group-hover:text-navy">
             Before
           </span>
         </div>
-        <ArrowRight className="text-gold shrink-0" size={28} aria-hidden />
+        <ArrowRight className="text-gold shrink-0 transition-transform duration-300 group-hover:translate-x-1.5" size={28} aria-hidden />
         <div className="flex flex-col items-center gap-3">
-          <CircleFrame src={afterSrc} alt="Resident after care at GBSS shelter" size={140} />
-          <span className="text-[12px] font-display font-600 uppercase tracking-wide text-charcoal">
+          <CircleFrame src={afterSrc} alt="Resident after care at GBSS shelter" />
+          <span className="text-[12px] font-display font-600 uppercase tracking-wide text-charcoal transition-colors group-hover:text-navy">
             After
           </span>
         </div>
       </div>
-      <figcaption className="text-[14px] text-charcoal text-center mt-5 max-w-xs">
+      <figcaption className="text-[14px] text-charcoal text-center mt-5 max-w-xs transition-colors duration-300 group-hover:text-navy">
         {caption}
       </figcaption>
     </figure>

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Phone, MapPin, Facebook, Instagram } from "lucide-react";
+import Image from "next/image";
+import { Phone, MapPin, Facebook, Instagram, Mail } from "lucide-react";
 import { siteIdentity, navLinks } from "@/content/site";
 import { namedContacts } from "@/content/team";
 
@@ -9,12 +10,13 @@ export default function SiteFooter() {
       <div className="max-w-[1200px] mx-auto px-5 md:px-8 py-14 grid grid-cols-1 md:grid-cols-4 gap-10">
         <div className="md:col-span-1">
           <div className="flex items-center gap-3 mb-3">
-            <span
-              aria-hidden
-              className="w-9 h-9 rounded-full border-2 border-gold flex items-center justify-center bg-white"
-            >
-              <span className="font-display font-700 text-navy text-xs">GB</span>
-            </span>
+            <Image
+              src="/images/logo.png"
+              alt="Guru Bharosa Sewa Sanstha Logo"
+              width={36}
+              height={36}
+              className="rounded-full object-cover border border-gold/30"
+            />
             <span className="font-display font-700 text-navy text-[15px] leading-tight">
               {siteIdentity.nameEnglish}
             </span>
@@ -51,6 +53,12 @@ export default function SiteFooter() {
               </li>
             ))}
             <li className="flex items-start gap-2 text-[14px] text-charcoal">
+              <Mail size={16} className="mt-0.5 text-gold shrink-0" aria-hidden />
+              <a href={`mailto:${siteIdentity.email}`} className="hover:text-navy break-all">
+                {siteIdentity.email}
+              </a>
+            </li>
+            <li className="flex items-start gap-2 text-[14px] text-charcoal">
               <MapPin size={16} className="mt-0.5 text-gold shrink-0" aria-hidden />
               <span>
                 {siteIdentity.address.line1}, {siteIdentity.address.line2}
@@ -64,20 +72,22 @@ export default function SiteFooter() {
             Follow
           </h3>
           <div className="flex gap-3">
-            <span
-              className="w-9 h-9 rounded-full bg-navy-10 flex items-center justify-center text-navy opacity-50"
-              title="Social handles not yet available"
+            <a
+              href={siteIdentity.socialMedia.facebook}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-9 h-9 rounded-full bg-navy flex items-center justify-center text-white hover:bg-gold transition-colors"
+              aria-label="Visit our Facebook page"
             >
               <Facebook size={16} aria-hidden />
-            </span>
+            </a>
             <span
               className="w-9 h-9 rounded-full bg-navy-10 flex items-center justify-center text-navy opacity-50"
-              title="Social handles not yet available"
+              title="Instagram coming soon"
             >
               <Instagram size={16} aria-hidden />
             </span>
           </div>
-          <p className="text-[12px] text-charcoal mt-3">Social handles coming soon.</p>
         </div>
       </div>
 

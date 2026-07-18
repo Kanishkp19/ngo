@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { navLinks } from "@/content/site";
@@ -15,12 +16,14 @@ export default function SiteHeader() {
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-navy-10">
       <div className="max-w-[1200px] mx-auto px-5 md:px-8 h-[76px] flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3 shrink-0" aria-label="GBSS home">
-          <span
-            aria-hidden
-            className="w-10 h-10 rounded-full border-2 border-gold flex items-center justify-center bg-navy-10"
-          >
-            <span className="font-display font-700 text-navy text-sm">GB</span>
-          </span>
+          <Image
+            src="/images/logo.png"
+            alt="Guru Bharosa Sewa Sanstha Logo"
+            width={40}
+            height={40}
+            priority
+            className="rounded-full object-cover border border-gold/30"
+          />
           <span className="hidden sm:block font-display font-700 text-navy text-[15px] leading-tight">
             Guru Bharosa
             <br />

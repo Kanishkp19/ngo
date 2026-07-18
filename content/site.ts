@@ -4,6 +4,10 @@ export const siteIdentity = {
   shortName: "GBSS",
   registration: "Regd. No. 26/Sri Ganganagar 15/16",
   founded: 2014,
+  email: "gurubhrosha2014@gmail.com",
+  socialMedia: {
+    facebook: "https://www.facebook.com/share/14nJjUMyATa/",
+  },
   address: {
     line1: "Ward No. 13, Near Kishanpura Abadi",
     line2: "Suratgarh – 335804, District Sri Ganganagar, Rajasthan",

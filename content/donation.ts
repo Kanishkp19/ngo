@@ -4,11 +4,11 @@ export const bankDetails = {
   ifsc: "PUNB0118500",
 };
 
-// No high-resolution QR asset supplied yet — flagged as a gap in CONTENT.md.
+// QR asset supplied.
 export const qrCodeAsset = {
-  src: "",
-  caption: "Scan to donate (high-resolution QR code coming soon)",
-  available: false,
+  src: "/media/donate/QR.png",
+  caption: "Scan using GPay, PhonePe, Paytm, or any UPI app to donate directly to the shelter's bank account.",
+  available: true,
 };
 
 export const transparencyNote =

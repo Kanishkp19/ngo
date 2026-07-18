@@ -7,8 +7,7 @@ import Button from "@/components/primitives/Button";
 import StatCard from "@/components/primitives/StatCard";
 import ServiceCard from "@/components/cards/ServiceCard";
 import StoryCard from "@/components/cards/StoryCard";
-import HindiQuote from "@/components/primitives/HindiQuote";
-import { siteIdentity, pressFeature } from "@/content/site";
+import { siteIdentity } from "@/content/site";
 import { impactStats, storyPlaceholders } from "@/content/impact";
 import { topLevelOfferings } from "@/content/services";
 
@@ -106,17 +105,7 @@ export default function HomePage() {
         </div>
       </Section>
 
-      {/* Press mention */}
-      <Section background="white">
-        <div className="max-w-2xl mx-auto text-center">
-          <span className="text-[13px] font-display font-600 uppercase tracking-[0.08em] text-gold">
-            As Featured In {pressFeature.publication}
-          </span>
-          <div className="mt-6">
-            <HindiQuote text={pressFeature.headline} />
-          </div>
-        </div>
-      </Section>
+
 
       {/* CTA band */}
       <Section background="cream" className="!py-14">

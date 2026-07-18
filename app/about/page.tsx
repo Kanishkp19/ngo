@@ -4,7 +4,7 @@ import HindiQuote from "@/components/primitives/HindiQuote";
 import Pill from "@/components/primitives/Pill";
 import TwoToneHeading from "@/components/primitives/TwoToneHeading";
 import ImageGrid2x2 from "@/components/media/ImageGrid2x2";
-import PhotoCollage from "@/components/media/PhotoCollage";
+import BounceCards from "@/components/media/BounceCards";
 import TeamMemberCard from "@/components/cards/TeamMemberCard";
 import { siteIdentity, mottos, values } from "@/content/site";
 import { namedContacts, committee } from "@/content/team";
@@ -41,12 +41,12 @@ export default function AboutPage() {
               residents — no formal institutional partners are attached to this work yet.
             </p>
           </div>
-          <PhotoCollage
+          <BounceCards
             images={[
-              { alt: "Meal service at the GBSS shelter" },
-              { alt: "Medical checkup for a resident" },
-              { alt: "Cultural program for residents" },
-              { alt: "Daily routine care at the shelter" },
+              "/media/about/ourstory1.png",
+              "/media/about/ourstory2.png",
+              "/media/about/ourstory3.png",
+              "/media/about/ourstory4.png",
             ]}
           />
         </div>
@@ -92,10 +92,10 @@ export default function AboutPage() {
         <div className="max-w-2xl mx-auto">
           <ImageGrid2x2
             images={[
-              { alt: "Facility exterior" },
-              { alt: "Residents in daily life" },
-              { alt: "Community event at GBSS" },
-              { alt: "Volunteers with residents" },
+              { alt: "Facility exterior", src: "/media/gallery/facility/exterior.jpeg" },
+              { alt: "Residents in daily life", src: "/media/gallery/facility/residents.jpeg" },
+              { alt: "Community event at GBSS", src: "/media/about/volunteers.jpeg" },
+              { alt: "Volunteers with residents", src: "/media/about/blanket_pile.jpeg" },
             ]}
           />
         </div>
@@ -109,9 +109,15 @@ export default function AboutPage() {
           highlight="27 LIFE MEMBERS"
           description={committee.note}
         />
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-10 max-w-2xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-10 max-w-3xl md:max-w-4xl mx-auto">
           {namedContacts.map((c) => (
-            <TeamMemberCard key={c.phone} name={c.name} />
+            <TeamMemberCard 
+              key={c.phone} 
+              name={c.name} 
+              roleEnglish={c.roleEnglish}
+              roleHindi={c.roleHindi}
+              src={c.src}
+            />
           ))}
         </div>
       </Section>

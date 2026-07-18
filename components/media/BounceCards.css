@@ -1,0 +1,59 @@
+.bounceCardsContainer {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 380px;
+  height: 380px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .bounceCardsContainer {
+    width: 520px;
+    height: 520px;
+  }
+}
+
+.card {
+  position: absolute;
+  width: 155px;
+  height: 155px;
+  border: 4px solid #fff;
+  outline: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+  background-color: #f8fafc;
+  cursor: pointer;
+  transform-origin: center center;
+  transition: box-shadow 350ms cubic-bezier(0.16, 1, 0.3, 1), border-color 350ms ease;
+}
+
+.card:hover {
+  box-shadow: 0 20px 35px -5px rgba(212, 175, 55, 0.18), 0 12px 16px -8px rgba(0, 0, 0, 0.12);
+  border-color: #fff;
+  z-index: 10 !important;
+}
+
+@media (min-width: 768px) {
+  .card {
+    width: 220px;
+    height: 220px;
+    border: 5px solid #fff;
+    outline: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 20px;
+  }
+}
+
+.card .image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  transition: transform 400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card:hover .image {
+  transform: scale(1.04);
+}

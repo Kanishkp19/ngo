@@ -3,6 +3,7 @@ export type Service = {
   titleHindi: string;
   titleEnglish: string;
   caption: string;
+  src?: string;
 };
 
 export const coreServices: Service[] = [
@@ -11,24 +12,28 @@ export const coreServices: Service[] = [
     titleHindi: "प्राथमिक उपचार",
     titleEnglish: "First Aid",
     caption: "Immediate care for those found injured or unwell in public spaces.",
+    src: "/media/our_work/first_aid.png",
   },
   {
     id: "food-service",
     titleHindi: "भोजन सेवा",
     titleEnglish: "Food Service",
     caption: "Regular, nourishing meals for every resident of the shelter.",
+    src: "/media/our_work/food_service.jpeg",
   },
   {
-    id: "recreation",
-    titleHindi: "मनोरंजन के संसाधन",
-    titleEnglish: "Recreation Resources",
-    caption: "Space and activity for rest, play, and everyday dignity.",
+    id: "blanket-distribution",
+    titleHindi: "कंबल वितरण सेवा",
+    titleEnglish: "Blanket Distribution",
+    caption: "Providing blankets and warm clothing to those in need during the cold winter months.",
+    src: "/media/our_work/blanket_distribution.jpeg",
   },
   {
     id: "daily-routine",
-    titleHindi: "दैनिक दिनचर्या",
-    titleEnglish: "Daily Routine Care & Basic Needs",
-    caption: "Hygiene, clothing, and the basic needs of daily life, met consistently.",
+    titleHindi: "ज़रूरतमंदों को आश्रय एवं संसाधन सहायता",
+    titleEnglish: "Providing Shelter & Infrastructure Support",
+    caption: "Accepting brick and steel donations to expand and build proper shelter facilities for the NGO's betterment.",
+    src: "/media/our_work/providing_resources.jpeg",
   },
   {
     id: "mental-development",
@@ -37,16 +42,11 @@ export const coreServices: Service[] = [
     caption: "Structured efforts to support cognitive and emotional growth.",
   },
   {
-    id: "psychiatric-services",
-    titleHindi: "मनोरोग विशेषज्ञ की सेवाएँ",
-    titleEnglish: "Psychiatric Specialist Services",
-    caption: "Access to psychiatric specialists for residents who need it.",
-  },
-  {
     id: "rehabilitation",
     titleHindi: "पुनर्वास हेतु प्रयास - घर वापसी",
     titleEnglish: "Rehabilitation & Home Return",
     caption: "Working to reunite residents with their families wherever possible.",
+    src: "/media/our_work/home_return.jpeg",
   },
   {
     id: "cultural-programs",
