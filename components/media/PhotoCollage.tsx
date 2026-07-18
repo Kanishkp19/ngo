@@ -15,24 +15,27 @@ export default function PhotoCollage({ images }: { images: CollageImage[] }) {
   ];
 
   return (
-    <div className="flex flex-col items-center gap-8 w-full md:relative md:h-[540px] md:max-w-xl md:block mx-auto">
+    <div className="flex flex-col items-center gap-10 w-full md:relative md:h-[560px] md:max-w-xl md:block mx-auto px-2">
       {images.slice(0, 4).map((img, i) => (
         <div
           key={i}
-          className={`w-full max-w-[330px] aspect-[4/3] relative rounded-card overflow-hidden shadow-card bg-navy-10 ${rotations[i % rotations.length]} 
-            md:w-[245px] md:h-[245px] md:aspect-square ${desktopPositions[i % desktopPositions.length]}`}
+          className={`w-[94vw] max-w-[460px] aspect-[4/3] relative bg-white p-3 border border-gold/25 rounded-card shadow-card ${rotations[i % rotations.length]} 
+            md:w-[245px] md:h-[245px] md:aspect-square ${desktopPositions[i % desktopPositions.length]} 
+            transition-all duration-300 hover:-translate-y-1 hover:shadow-lg`}
         >
-          {img.src ? (
-            <Image
-              src={img.src}
-              alt={img.alt}
-              fill
-              sizes="(max-width: 768px) 330px, 250px"
-              className="object-cover w-full h-full hover:scale-105 transition-transform duration-300"
-            />
-          ) : (
-            <ImagePlaceholder label={img.alt} className="w-full h-full" />
-          )}
+          <div className="relative w-full h-full rounded-[8px] overflow-hidden bg-navy-10">
+            {img.src ? (
+              <Image
+                src={img.src}
+                alt={img.alt}
+                fill
+                sizes="(max-width: 768px) 460px, 250px"
+                className="object-cover w-full h-full hover:scale-105 transition-transform duration-500"
+              />
+            ) : (
+              <ImagePlaceholder label={img.alt} className="w-full h-full" />
+            )}
+          </div>
         </div>
       ))}
     </div>
