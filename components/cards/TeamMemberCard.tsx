@@ -14,7 +14,7 @@ export default function TeamMemberCard({ name, roleEnglish, roleHindi, src }: Te
     : roleEnglish || roleHindi || "Life Member";
 
   return (
-    <div className="w-[200px] h-[320px] md:w-[250px] md:h-[390px] bg-white border border-navy-10 rounded-[16px] shadow-sm flex flex-col items-center p-3 md:p-4 relative overflow-hidden transition-all duration-300 hover:shadow-md hover:scale-[1.02] bg-gradient-to-b from-white via-white to-navy-5/10 group mx-auto">
+    <div className="w-full max-w-[200px] md:max-w-[250px] h-[290px] min-[400px]:h-[320px] md:h-[390px] bg-white border border-navy-10 rounded-[16px] shadow-sm flex flex-col items-center p-3 md:p-4 relative overflow-hidden transition-all duration-300 hover:shadow-md hover:scale-[1.02] bg-gradient-to-b from-white via-white to-navy-5/10 group mx-auto">
       {/* Gold top strip */}
       <div className="absolute top-0 left-0 w-full h-[5px] md:h-[6px] bg-gold" />
       
@@ -24,13 +24,13 @@ export default function TeamMemberCard({ name, roleEnglish, roleHindi, src }: Te
       </span>
 
       {/* Photo Box */}
-      <div className="w-[160px] h-[180px] md:w-[210px] md:h-[240px] rounded-[10px] overflow-hidden bg-slate-50 shadow-inner relative border border-navy-5 mb-2 md:mb-3">
+      <div className="w-full h-[140px] min-[400px]:h-[180px] md:h-[240px] rounded-[10px] overflow-hidden bg-slate-50 shadow-inner relative border border-navy-5 mb-2 md:mb-3">
         {src ? (
           <Image
             src={src}
             alt={`Photo of ${name}`}
             fill
-            sizes="(max-width: 768px) 160px, 210px"
+            sizes="(max-width: 768px) 100vw, 210px"
             className="object-contain w-full h-full transition-transform duration-500 group-hover:scale-105"
           />
         ) : (

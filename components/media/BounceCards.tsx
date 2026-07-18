@@ -27,8 +27,9 @@ export default function BounceCards({
     if (!containerRef.current) return;
 
     const ctx = gsap.context(() => {
-      const isDesktop = window.innerWidth >= 768;
-      const baseOffset = isDesktop ? 115 : 80;
+      const w = window.innerWidth;
+      const isDesktop = w >= 768;
+      const baseOffset = isDesktop ? 115 : (w < 380 ? 55 : 80);
 
       images.forEach((_, i) => {
         const colI = Math.floor(i / 2);
@@ -60,10 +61,11 @@ export default function BounceCards({
     if (!enableHover || !containerRef.current) return;
 
     const q = gsap.utils.selector(containerRef);
-    const isDesktop = window.innerWidth >= 768;
+    const w = window.innerWidth;
+    const isDesktop = w >= 768;
 
-    const baseOffset = isDesktop ? 115 : 80;
-    const pushedOffset = isDesktop ? 155 : 110;
+    const baseOffset = isDesktop ? 115 : (w < 380 ? 55 : 80);
+    const pushedOffset = isDesktop ? 155 : (w < 380 ? 75 : 110);
 
     images.forEach((_, i) => {
       const target = q(`.card-${i}`);
@@ -110,8 +112,9 @@ export default function BounceCards({
     if (!containerRef.current) return;
 
     const q = gsap.utils.selector(containerRef);
-    const isDesktop = window.innerWidth >= 768;
-    const baseOffset = isDesktop ? 115 : 80;
+    const w = window.innerWidth;
+    const isDesktop = w >= 768;
+    const baseOffset = isDesktop ? 115 : (w < 380 ? 55 : 80);
 
     images.forEach((_, i) => {
       const target = q(`.card-${i}`);

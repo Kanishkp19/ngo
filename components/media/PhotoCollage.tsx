@@ -10,7 +10,7 @@ export default function PhotoCollage({ images }: { images: CollageImage[] }) {
       {images.slice(0, 4).map((img, i) => (
         <div
           key={i}
-          className={`absolute w-[160px] h-[160px] md:w-[210px] md:h-[210px] rounded-card overflow-hidden shadow-card bg-navy-10 ${rotations[i % rotations.length]}`}
+          className={`absolute w-[130px] h-[130px] min-[400px]:w-[160px] min-[400px]:h-[160px] md:w-[210px] md:h-[210px] rounded-card overflow-hidden shadow-card bg-navy-10 ${rotations[i % rotations.length]}`}
           style={{
             top: `${(i % 2) * 45}%`,
             left: `${i < 2 ? 5 : 45}%`,

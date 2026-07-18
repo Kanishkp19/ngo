@@ -106,8 +106,8 @@ export default function GalleryPage() {
             grayscale={false} 
             overlayBlurColor="#ffffff" 
             fit={0.65}
-            openedImageWidth="380px"
-            openedImageHeight="480px"
+            openedImageWidth="min(380px, 85vw)"
+            openedImageHeight="min(480px, 60vh)"
           />
         </div>
       </Section>
