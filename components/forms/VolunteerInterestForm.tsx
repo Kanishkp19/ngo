@@ -3,11 +3,50 @@
 import { useState } from "react";
 
 export default function VolunteerInterestForm() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setSubmitted(true);
+    setIsSubmitting(true);
+    setError(null);
+
+    const formData = new FormData(e.currentTarget);
+    const data = {
+      formType: "volunteer",
+      name: formData.get("name"),
+      phone: formData.get("phone"),
+      help: formData.get("help"),
+    };
+
+    const submitUrl = process.env.NEXT_PUBLIC_FORM_SUBMIT_URL;
+    if (!submitUrl) {
+      console.warn("NEXT_PUBLIC_FORM_SUBMIT_URL is not defined. Simulating local success.");
+      setTimeout(() => {
+        setIsSubmitting(false);
+        setSubmitted(true);
+      }, 1000);
+      return;
+    }
+
+    try {
+      await fetch(submitUrl, {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      setIsSubmitting(false);
+      setSubmitted(true);
+    } catch (err) {
+      console.error("Volunteer Form submission error:", err);
+      setIsSubmitting(false);
+      setError("Something went wrong. Please check your connection and try again.");
+    }
   }
 
   if (submitted) {
@@ -63,11 +102,16 @@ export default function VolunteerInterestForm() {
         />
       </div>
 
+      {error && (
+        <p className="text-[13px] text-red-600 font-display font-500">{error}</p>
+      )}
+
       <button
         type="submit"
-        className="self-start bg-navy text-white rounded-btn px-7 py-3.5 text-[14px] font-display font-600 uppercase tracking-wide hover:bg-navy-hover transition-colors duration-200"
+        disabled={isSubmitting}
+        className="self-start bg-navy text-white rounded-btn px-7 py-3.5 text-[14px] font-display font-600 uppercase tracking-wide hover:bg-navy-hover transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Submit Interest
+        {isSubmitting ? "Submitting..." : "Submit Interest"}
       </button>
     </form>
   );
