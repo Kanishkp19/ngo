@@ -36,9 +36,8 @@ export default function HomePage() {
         </div>
       </Section>
 
-      {/* Impact snapshot strip */}
       <Section background="cream">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {impactStats.map((stat) => (
             <StatCard key={stat.label} {...stat} />
           ))}

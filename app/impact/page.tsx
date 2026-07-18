@@ -18,13 +18,10 @@ export default function ImpactPage() {
         </div>
       </Section>
 
-      {/* Stat band, larger treatment */}
       <Section background="cream">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {impactStats.map((stat) => (
-            <div key={stat.label} className="scale-110">
-              <StatCard {...stat} />
-            </div>
+            <StatCard key={stat.label} {...stat} />
           ))}
         </div>
       </Section>
