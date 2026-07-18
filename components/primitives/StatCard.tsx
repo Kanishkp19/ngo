@@ -17,7 +17,7 @@ export default function StatCard({ value, suffix = "", label, isYear = false }: 
   let IconComponent = Home;
   let iconBg = "bg-gold/10 text-gold border-gold/20";
   
-  if (value === 129) {
+  if (value === 260) {
     IconComponent = HeartHandshake;
     iconBg = "bg-navy/10 text-navy border-navy/20";
   } else if (value === 2014) {
@@ -28,7 +28,7 @@ export default function StatCard({ value, suffix = "", label, isYear = false }: 
   return (
     <div 
       ref={ref} 
-      className="group bg-white rounded-card shadow-card border border-navy-10/40 p-8 flex flex-col items-center justify-center text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-lg"
+      className="group bg-white rounded-card shadow-card border border-navy-10/40 p-6 md:p-8 flex flex-col items-center justify-center text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-lg"
     >
       <div className={`w-14 h-14 rounded-full flex items-center justify-center border mb-5 transition-transform duration-300 group-hover:scale-110 ${iconBg}`}>
         <IconComponent size={26} strokeWidth={2} />

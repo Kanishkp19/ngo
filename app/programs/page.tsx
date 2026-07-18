@@ -22,7 +22,7 @@ const deepDiveDetails: Record<string, { problem: string; whatWeDo: string; outco
   rehabilitation: {
     problem: "Families are often unaware of what happened to a missing relative.",
     whatWeDo: "We work to trace, verify, and safely reunite residents with their families.",
-    outcome: "129 individuals reunited with their families to date.",
+    outcome: "260 individuals reunited with their families to date.",
   },
 };
 

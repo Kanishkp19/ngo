@@ -37,7 +37,7 @@ export default function HomePage() {
       </Section>
 
       <Section background="cream">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-y-12 gap-x-8 max-w-5xl mx-auto">
           {impactStats.map((stat) => (
             <StatCard key={stat.label} {...stat} />
           ))}

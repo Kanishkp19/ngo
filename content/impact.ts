@@ -1,6 +1,6 @@
 export const impactStats = [
   { value: 250, suffix: "+", label: "Individuals currently housed and cared for" },
-  { value: 129, suffix: "", label: "Reunited with their families" },
+  { value: 260, suffix: "", label: "Reunited with their families" },
   { value: 2014, suffix: "", label: "Serving continuously since", isYear: true },
 ];
 
