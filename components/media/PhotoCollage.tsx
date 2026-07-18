@@ -6,14 +6,14 @@ type CollageImage = { src?: string; alt: string };
 export default function PhotoCollage({ images }: { images: CollageImage[] }) {
   const rotations = ["-rotate-6", "rotate-3", "-rotate-3", "rotate-6"];
   return (
-    <div className="relative h-[380px] md:h-[480px] w-full max-w-md md:max-w-lg mx-auto">
+    <div className="relative h-[410px] sm:h-[460px] md:h-[540px] w-full max-w-[390px] sm:max-w-md md:max-w-xl mx-auto">
       {images.slice(0, 4).map((img, i) => (
         <div
           key={i}
-          className={`absolute w-[130px] h-[130px] min-[400px]:w-[160px] min-[400px]:h-[160px] md:w-[210px] md:h-[210px] rounded-card overflow-hidden shadow-card bg-navy-10 ${rotations[i % rotations.length]}`}
+          className={`absolute w-[165px] h-[165px] sm:w-[190px] sm:h-[190px] md:w-[245px] md:h-[245px] rounded-card overflow-hidden shadow-card bg-navy-10 ${rotations[i % rotations.length]}`}
           style={{
-            top: `${(i % 2) * 45}%`,
-            left: `${i < 2 ? 5 : 45}%`,
+            top: `${(i % 2) === 0 ? 2 : 48}%`,
+            left: `${i < 2 ? 2 : 50}%`,
             zIndex: i,
           }}
         >
@@ -22,7 +22,7 @@ export default function PhotoCollage({ images }: { images: CollageImage[] }) {
               src={img.src}
               alt={img.alt}
               fill
-              sizes="(max-width: 768px) 160px, 210px"
+              sizes="(max-width: 768px) 190px, 250px"
               className="object-cover w-full h-full hover:scale-105 transition-transform duration-300"
             />
           ) : (
