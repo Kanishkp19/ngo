@@ -4,25 +4,30 @@ import ImagePlaceholder from "./ImagePlaceholder";
 type CollageImage = { src?: string; alt: string };
 
 export default function PhotoCollage({ images }: { images: CollageImage[] }) {
-  const rotations = ["-rotate-6", "rotate-3", "-rotate-3", "rotate-6"];
+  const rotations = ["-rotate-2", "rotate-1", "-rotate-1", "rotate-2"];
+  
+  // Tailwind position styles for desktop (md screens and up)
+  const desktopPositions = [
+    "md:absolute md:top-[2%] md:left-[2%] md:z-[0]",
+    "md:absolute md:top-[48%] md:left-[2%] md:z-[1]",
+    "md:absolute md:top-[2%] md:left-[50%] md:z-[2]",
+    "md:absolute md:top-[48%] md:left-[50%] md:z-[3]"
+  ];
+
   return (
-    <div className="relative h-[410px] sm:h-[460px] md:h-[540px] w-full max-w-[390px] sm:max-w-md md:max-w-xl mx-auto">
+    <div className="flex flex-col items-center gap-8 w-full md:relative md:h-[540px] md:max-w-xl md:block mx-auto">
       {images.slice(0, 4).map((img, i) => (
         <div
           key={i}
-          className={`absolute w-[165px] h-[165px] sm:w-[190px] sm:h-[190px] md:w-[245px] md:h-[245px] rounded-card overflow-hidden shadow-card bg-navy-10 ${rotations[i % rotations.length]}`}
-          style={{
-            top: `${(i % 2) === 0 ? 2 : 48}%`,
-            left: `${i < 2 ? 2 : 50}%`,
-            zIndex: i,
-          }}
+          className={`w-full max-w-[330px] aspect-[4/3] relative rounded-card overflow-hidden shadow-card bg-navy-10 ${rotations[i % rotations.length]} 
+            md:w-[245px] md:h-[245px] md:aspect-square ${desktopPositions[i % desktopPositions.length]}`}
         >
           {img.src ? (
             <Image
               src={img.src}
               alt={img.alt}
               fill
-              sizes="(max-width: 768px) 190px, 250px"
+              sizes="(max-width: 768px) 330px, 250px"
               className="object-cover w-full h-full hover:scale-105 transition-transform duration-300"
             />
           ) : (
@@ -31,4 +36,5 @@ export default function PhotoCollage({ images }: { images: CollageImage[] }) {
         </div>
       ))}
     </div>
-  );}
+  );
+}
