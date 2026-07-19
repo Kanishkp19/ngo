@@ -8,18 +8,18 @@ export type Contact = {
 
 export const namedContacts: Contact[] = [
   {
-    name: "Krishna Chaudhary",
-    phone: "93146 50479",
-    roleEnglish: "Treasurer",
-    roleHindi: "कोषाध्यक्ष",
-    src: "/media/about/person/krishna.jpg",
-  },
-  {
     name: "Sikander Singh",
     phone: "94600 95563",
     roleEnglish: "President",
     roleHindi: "अध्यक्ष",
     src: "/media/about/person/sikander.png",
+  },
+  {
+    name: "Krishna Chaudhary",
+    phone: "93146 50479",
+    roleEnglish: "Treasurer",
+    roleHindi: "कोषाध्यक्ष",
+    src: "/media/about/person/krishna.jpg",
   },
   {
     name: "Dhanveer Singh Hundal",
