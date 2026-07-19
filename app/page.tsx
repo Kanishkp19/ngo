@@ -31,7 +31,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="order-1 md:order-2 flex justify-center">
-            <CircleFrame alt="Residents at the GBSS shelter in Suratgarh" size={320} />
+            <CircleFrame src="/media/home/image.png" alt="Residents at the GBSS shelter in Suratgarh" size={320} />
           </div>
         </div>
       </Section>
