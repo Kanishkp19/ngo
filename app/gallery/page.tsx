@@ -48,7 +48,7 @@ const domeImages = [
   "/media/about/ourstory2.png",
   "/media/about/ourstory3.png",
   "/media/about/ourstory4.png",
-  "/media/home/image.png",
+  "/media/home/home.png",
   // Slideshow
   "/slideshow/reunion_3.jpeg",
   "/slideshow/Screenshot 2026-07-19 at 1.54.36 PM.png",

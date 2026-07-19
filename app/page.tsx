@@ -31,7 +31,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="order-1 md:order-2 flex justify-center">
-            <RectangleFrame src="/media/home/image.png" alt="Residents at the GBSS shelter in Suratgarh" />
+            <RectangleFrame src="/media/home/home.png" alt="Residents at the GBSS shelter in Suratgarh" />
           </div>
         </div>
       </Section>
