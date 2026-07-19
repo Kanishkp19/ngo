@@ -13,14 +13,14 @@ export default function StoryCard({ excerpt, name, consented, src }: StoryCardPr
 
   return (
     <div className="bg-white rounded-card shadow-card overflow-hidden flex flex-col hover:shadow-lg transition-shadow duration-300">
-      <div className="aspect-[4/5] relative bg-navy-10">
+      <div className="aspect-[4/3] relative bg-slate-50 p-2">
         {consented && src ? (
           <Image
             src={src}
             alt={displayName}
             fill
             sizes="(max-width: 768px) 100vw, 33vw"
-            className="object-cover object-top w-full h-full hover:scale-105 transition-transform duration-500"
+            className="object-contain w-full h-full hover:scale-105 transition-transform duration-500"
           />
         ) : (
           <ImagePlaceholder label="Story photo pending consent" className="w-full h-full" />
