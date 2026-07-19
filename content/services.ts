@@ -37,9 +37,10 @@ export const coreServices: Service[] = [
   },
   {
     id: "mental-development",
-    titleHindi: "मानसिक विकास हेतु प्रयास",
-    titleEnglish: "Mental Development Efforts",
-    caption: "Structured efforts to support cognitive and emotional growth.",
+    titleHindi: "स्वच्छता एवं व्यक्तिगत देखभाल",
+    titleEnglish: "Personal Care & Hygiene",
+    caption: "Providing haircutting, shaving, baths, and clean clothing to restore dignity to every resident.",
+    src: "/media/our_work/care.png",
   },
   {
     id: "rehabilitation",
@@ -50,9 +51,10 @@ export const coreServices: Service[] = [
   },
   {
     id: "cultural-programs",
-    titleHindi: "विशेष योग्यजनों हेतु सांस्कृतिक कार्यक्रमों का आयोजन",
-    titleEnglish: "Cultural Programs for Specially-Abled Individuals",
-    caption: "Festivals and cultural events organized for and with residents.",
+    titleHindi: "खेलकूद एवं मनोरंजन गतिविधियाँ",
+    titleEnglish: "Sports and Fun",
+    caption: "Sports, games, and recreational activities organized for and with residents.",
+    src: "/media/our_work/sports&activity.png",
   },
 ];
 

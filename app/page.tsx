@@ -2,7 +2,7 @@ import { Home as HomeIcon, HeartPulse, Users } from "lucide-react";
 import Section from "@/components/layout/Section";
 import SectionHeading from "@/components/layout/SectionHeading";
 import TwoToneHeading from "@/components/primitives/TwoToneHeading";
-import CircleFrame from "@/components/media/CircleFrame";
+import RectangleFrame from "@/components/media/RectangleFrame";
 import Button from "@/components/primitives/Button";
 import StatCard from "@/components/primitives/StatCard";
 import ServiceCard from "@/components/cards/ServiceCard";
@@ -31,7 +31,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="order-1 md:order-2 flex justify-center">
-            <CircleFrame src="/media/home/image.png" alt="Residents at the GBSS shelter in Suratgarh" size={320} />
+            <RectangleFrame src="/media/home/image.png" alt="Residents at the GBSS shelter in Suratgarh" />
           </div>
         </div>
       </Section>

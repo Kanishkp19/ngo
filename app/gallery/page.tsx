@@ -10,28 +10,58 @@ import ImagePlaceholder from "@/components/media/ImagePlaceholder";
 import DomeGallery from "@/components/media/DomeGallery";
 
 const domeImages = [
+  // Achievements
   "/media/gallery/achievment/achievement_1.jpg",
   "/media/gallery/achievment/achievement_2.png",
   "/media/gallery/achievment/achievement_3.png",
   "/media/gallery/achievment/achievement_4.png",
   "/media/gallery/achievment/achievement_5.png",
   "/media/gallery/achievment/achievement_6.png",
+  // Events
   "/media/gallery/events/event_1.jpeg",
   "/media/gallery/events/event_2.jpeg",
   "/media/gallery/events/event_3.jpeg",
+  // Medical Checkups
   "/media/gallery/medical/medical_1.jpeg",
   "/media/gallery/medical/medical_2.jpeg",
   "/media/gallery/medical/medical_3.jpeg",
+  // Before & After
   "/media/gallery/before-after/before1.png",
   "/media/gallery/before-after/after1.png",
   "/media/gallery/before-after/before2.png",
   "/media/gallery/before-after/after2.png",
   "/media/gallery/before-after/sarjeet_kaur.png",
+  // Our Work
   "/media/our_work/first_aid.png",
   "/media/our_work/food_service.jpeg",
   "/media/our_work/providing_resources.jpeg",
   "/media/our_work/home_return.jpeg",
   "/media/our_work/blanket_distribution.jpeg",
+  "/media/our_work/care.png",
+  "/media/our_work/sports&activity.png",
+  // Life & Story Photos
+  "/media/about/life/Screenshot 2026-07-19 at 1.53.50 PM.png",
+  "/media/about/life/Screenshot 2026-07-19 at 1.54.36 PM.png",
+  "/media/about/life/daily_life.jpeg",
+  "/media/about/life/ourstory4.png",
+  "/media/about/ourstory1.png",
+  "/media/about/ourstory2.png",
+  "/media/about/ourstory3.png",
+  "/media/about/ourstory4.png",
+  "/media/home/image.png",
+  // Slideshow
+  "/slideshow/reunion_3.jpeg",
+  "/slideshow/Screenshot 2026-07-19 at 1.54.36 PM.png",
+  "/slideshow/meal_service.jpeg",
+  "/slideshow/blanket_pile.jpeg",
+  "/slideshow/Screenshot 2026-07-19 at 1.55.26 PM.png",
+  "/slideshow/Screenshot 2026-07-19 at 1.55.45 PM.png",
+  "/slideshow/WhatsApp Image 2026-07-18 at 13.36.51.jpeg",
+  "/slideshow/reunion_1.jpeg",
+  "/slideshow/ourstory4.png",
+  "/slideshow/exterior.jpeg",
+  "/slideshow/Screenshot 2026-07-19 at 1.56.20 PM.png",
+  // Team Members
   "/media/about/person/sikander.png",
   "/media/about/person/krishna.jpg",
   "/media/about/person/Dhanveer.jpg",

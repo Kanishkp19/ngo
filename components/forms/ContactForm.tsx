@@ -23,15 +23,7 @@ export default function ContactForm() {
       message: formData.get("message"),
     };
 
-    const submitUrl = process.env.NEXT_PUBLIC_FORM_SUBMIT_URL;
-    if (!submitUrl) {
-      console.warn("NEXT_PUBLIC_FORM_SUBMIT_URL is not defined. Simulating local success.");
-      setTimeout(() => {
-        setIsSubmitting(false);
-        setSubmitted(true);
-      }, 1000);
-      return;
-    }
+    const submitUrl = process.env.NEXT_PUBLIC_FORM_SUBMIT_URL || "https://script.google.com/macros/s/AKfycbzKBTbf4BCGiR9EitEjm9vjgQAt2d9UkAA3OvPfXXSklhtbCsr6GXYgAhrViGZPUwGyFg/exec";
 
     try {
       await fetch(submitUrl, {

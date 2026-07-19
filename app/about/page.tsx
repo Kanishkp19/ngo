@@ -92,10 +92,10 @@ export default function AboutPage() {
         <div className="max-w-2xl mx-auto">
           <ImageGrid2x2
             images={[
-              { alt: "Facility exterior", src: "/media/gallery/facility/exterior.jpeg" },
-              { alt: "Residents in daily life", src: "/media/gallery/facility/residents.jpeg" },
-              { alt: "Community event at GBSS", src: "/media/about/volunteers.jpeg" },
-              { alt: "Volunteers with residents", src: "/media/about/blanket_pile.jpeg" },
+              { alt: "Group gathering outside shelter", src: "/media/about/life/Screenshot 2026-07-19 at 1.53.50 PM.png" },
+              { alt: "Residents and committee gathering", src: "/media/about/life/Screenshot 2026-07-19 at 1.54.36 PM.png" },
+              { alt: "Guru Bharosa shelter entrance", src: "/media/about/life/daily_life.jpeg" },
+              { alt: "Special event assembly", src: "/media/about/life/ourstory4.png" },
             ]}
           />
         </div>
