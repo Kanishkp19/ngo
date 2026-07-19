@@ -170,26 +170,13 @@ export default function DomeGallery({
     document.body.classList.remove('dg-scroll-lock');
   }, []);
 
-  const [isMobile, setIsMobile] = useState(false);
+  const items = useMemo(() => buildItems(images, segments), [images, segments]);
 
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+  const getOptimizedUrl = useCallback((src: string) => {
+    if (!src) return '';
+    if (src.startsWith('http')) return src;
+    return `/_next/image?url=${encodeURIComponent(src)}&w=256&q=75`;
   }, []);
-
-  const optimizedSegments = useMemo(() => {
-    return isMobile ? Math.min(16, segments) : segments;
-  }, [isMobile, segments]);
-
-  const optimizedImages = useMemo(() => {
-    return isMobile ? images.slice(0, 18) : images;
-  }, [isMobile, images]);
-
-  const items = useMemo(() => buildItems(optimizedImages, optimizedSegments), [optimizedImages, optimizedSegments]);
 
   const applyTransform = (xDeg: number, yDeg: number) => {
     const el = sphereRef.current;
@@ -494,7 +481,7 @@ export default function DomeGallery({
       const offsetY = getDataNumber(parent, 'offsetY', 0);
       const sizeX = getDataNumber(parent, 'sizeX', 2);
       const sizeY = getDataNumber(parent, 'sizeY', 2);
-      const parentRot = computeItemBaseRotation(offsetX, offsetY, sizeX, sizeY, optimizedSegments);
+      const parentRot = computeItemBaseRotation(offsetX, offsetY, sizeX, sizeY, segments);
       const parentY = normalizeAngle(parentRot.rotateY);
       const globalY = normalizeAngle(rotationRef.current.y);
       let rotY = -(parentY + globalY) % 360;
@@ -592,7 +579,7 @@ export default function DomeGallery({
         overlay.addEventListener('transitionend', onFirstEnd);
       }
     },
-    [enlargeTransitionMs, lockScroll, openedImageHeight, openedImageWidth, optimizedSegments, unlockScroll]
+    [enlargeTransitionMs, lockScroll, openedImageHeight, openedImageWidth, segments, unlockScroll]
   );
 
   const onTileClick = useCallback(
@@ -629,8 +616,8 @@ export default function DomeGallery({
       ref={rootRef}
       className="sphere-root"
       style={{
-        '--segments-x': optimizedSegments,
-        '--segments-y': optimizedSegments,
+        '--segments-x': segments,
+        '--segments-y': segments,
         '--overlay-blur-color': overlayBlurColor,
         '--tile-radius': imageBorderRadius,
         '--enlarge-radius': openedImageBorderRadius,
@@ -664,7 +651,7 @@ export default function DomeGallery({
                   onClick={onTileClick}
                   onPointerUp={onTilePointerUp}
                 >
-                  <img src={it.src} draggable={false} alt={it.alt} />
+                  <img src={getOptimizedUrl(it.src)} draggable={false} alt={it.alt} />
                 </div>
               </div>
             ))}
